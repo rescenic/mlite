@@ -3,7 +3,6 @@
 namespace Plugins\Kepegawaian;
 
 use Systems\AdminModule;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
 {
@@ -15,12 +14,12 @@ class Admin extends AdminModule
             'Data Pegawai Kontrak' => 'indexkontrak',
             'Data Pegawai Tidak Aktif' => 'indexnon',
             'Tambah Baru' => 'add',
-            //'Master Pegawai' => 'master',
         ];
     }
 
     public function getManage()
     {
+<<<<<<< HEAD
         $this->_addHeaderFiles();
         $this->core->addCSS(url(MODULES . '/manajemen/css/admin/style.css'));
         $this->core->addJS(url(BASE_DIR . '/assets/jscripts/Chart.bundle.min.js'));
@@ -79,6 +78,13 @@ class Admin extends AdminModule
         $rows = $this->db('pegawai')->like('nama', $key)->oneArray();
         $id = $rows['id'];
         redirect(url([ADMIN, 'profil', 'biodata', $id]));
+=======
+      $sub_modules = [
+        ['name' => 'Data Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'index']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
+        ['name' => 'Add Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'group', 'desc' => 'Tambah Data Pegawai'],
+      ];
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     }
 
     public function getIndex($page = 1)
@@ -430,6 +436,7 @@ class Admin extends AdminModule
 
     public function getPrint()
     {
+<<<<<<< HEAD
         $pasien = $this->db('pegawai')->toArray();
         $logo = $this->settings->get('settings.logo');
 
@@ -1613,6 +1620,30 @@ class Admin extends AdminModule
         header('Expires: 0');
         $templateProcessor->saveAs('php://output');
         exit();
+=======
+      $pegawai = $this->db('pegawai')->toArray();
+
+      echo $this->draw('cetak.pegawai.html', [
+        'pegawai' => $pegawai
+      ]);
+
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'P'
+      ]);
+  
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/cetak.pegawai.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+  
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();    
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     }
 
     public function getCSS()

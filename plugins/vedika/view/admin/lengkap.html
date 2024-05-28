@@ -33,9 +33,15 @@
                 <div class="row clearfix">
                   <div class="col col-md-6">
                     <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}
+<<<<<<< HEAD
                       <a href="{?=url()?}/admin/vedika/lengkapexcel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
                       <a href="{?=url()?}/admin/vedika/lengkapexcel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
                       <a href="{?=url()?}/admin/vedika/lengkapexcel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+=======
+                      <a href="{?=url()?}/{?=ADMIN?}/vedika/lengkapexcel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
+                      <a href="{?=url()?}/{?=ADMIN?}/vedika/lengkapexcel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
+                      <a href="{?=url()?}/{?=ADMIN?}/vedika/lengkapexcel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                     </h3>
                   </div>
                   <div class="col col-md-6">
@@ -92,11 +98,18 @@
                             {loop: $value.status_lengkap as $data}
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
+<<<<<<< HEAD
                           	{if: $_SESSION['mlite_user'] == '4'}
                             <a href="#" class="btn btn-danger btn-xs bridging_inacbgs" data-no_rawat="{$value.no_rawat}">
                               <i class="fa fa-refresh"></i> Grouping Inacbgs
                             </a>
                           	{/if}
+=======
+                            <br>
+                            <a href="#" class="btn btn-danger btn-xs bridging_inacbgs" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
+                              <i class="fa fa-refresh"></i> Grouping Inacbgs
+                            </a>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                             <br><br><br>
                             <div class="">
                               {loop: $value.pegawai as $data}
@@ -136,7 +149,21 @@
                               <td width='120px'>{if: $tab == 'ralan'}Poliklinik{else}Bangsal/kamar{/if}</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
+<<<<<<< HEAD
                               <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
+=======
+                              {if: $value.status_lanjut == 'Ralan'}
+                              <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
+                              {/if}
+                              {if: $value.status_lanjut == 'Ranap'}
+                              <td width='120px'>Dokter</td>
+                              <td>:
+                                {loop: $value.nm_dokter as $data}
+                                  - {$data.nm_dokter}<br>
+                                {/loop}
+                              </td>
+                              {/if}
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                             </tr>
                             <tr>
                               <td width='120px'>Status</td><td>: {$value.status_lanjut} ({$value.png_jawab})</td>
@@ -152,15 +179,23 @@
                               <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
                             </tr>
                             <tr>
+<<<<<<< HEAD
                               <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
                             </tr>
                             <tr>
                               <td width='120px'>Pros. Utama</td><td>: {$value.kode} - {$value.deskripsi_panjang}</td>
+=======
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Dx. Utama</a></td><td>: {$value.kd_penyakit} - {$value.nm_penyakit}</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahprosedur',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Pros. Utama</a></td><td>: {$value.kode} - {$value.deskripsi_panjang}</td>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                             </tr>
                           </table>
                         </td>
                         <td>
                           <table>
+<<<<<<< HEAD
                             <tr><td><form action="{?=url(ADMIN.'/pasien_galleries/add')?}" method="POST" target="_blank"><input type="hidden" name="name" value="{$value.no_rkm_medis}"><input type="submit" class="btn btn-info btn-xs" value="Unggah Berkas Pasien" /></form></td></tr>
                             {if: !empty($value.berkas_digital_pasien)}
                             {loop: $value.berkas_digital_pasien as $data}
@@ -169,6 +204,8 @@
                             </tr>
                             {/loop}
                             {/if}
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                             <tr><td><br><a href="{$value.berkasPerawatan}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
@@ -227,8 +264,12 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_rawat = $(this).attr("data-no_rawat");
+<<<<<<< HEAD
     //var loadURL =  baseURL + '/vedika/bridginginacbgs/' + no_rawat + '?t=' + mlite.token;
     var loadURL = 'https://simrs.rshdbarabai.com/webapps/inacbg2/pages/detailkirim.php?norawat=' + no_rawat + '&codernik=6307061604860001';
+=======
+    var loadURL =  baseURL + '/vedika/bridginginacbgs/' + no_rawat + '?t=' + mlite.token;
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
     var modal = $('#inacbgsModal');
     var modalContent = $('#inacbgsModal .modal-content');

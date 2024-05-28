@@ -25,12 +25,7 @@ abstract class Main
     public function __construct()
     {
         $this->setSession();
-
         QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
-
-        $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
-        $check_db->execute();
-        $check_db = $check_db->fetch();
 
         if (!is_dir(WEBAPPS_PATH)) {
             mkdir(WEBAPPS_PATH, 0777);
@@ -80,11 +75,20 @@ abstract class Main
             mkdir(UPLOADS."/settings", 0777);
         }
 
-        copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
-
-        if(empty($check_db)) {
-            $this->freshInstall();
+        if (!is_dir(UPLOADS."/invoices")) {
+            mkdir(UPLOADS."/invoices", 0777);
         }
+
+        if (!is_dir(UPLOADS."/laboratorium")) {
+            mkdir(UPLOADS."/laboratorium", 0777);
+        }
+
+        if (!is_dir(UPLOADS."/radiologi")) {
+            mkdir(UPLOADS."/radiologi", 0777);
+        }
+        
+        copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
+        copy(THEMES.'/admin/img/wallpaper.jpg', UPLOADS.'/settings/wallpaper.jpg');
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -92,7 +96,7 @@ abstract class Main
         $this->tpl = new Templates($this);
         $this->router = new Router;
 
-        $this->append(base64_decode('PG1ldGEgbmFtZT0iZ2VuZXJhdG9yIiBjb250ZW50PSJCYXNvcm8uSUQiIC8+'), 'header');
+        $this->append(base64_decode('PG1ldGEgbmFtZT0iZ2VuZXJhdG9yIiBjb250ZW50PSJNZWRpYyBMSVRFIEluZG9uZXNpYSIgLz4='), 'header');
     }
 
     public function db($table = null)
@@ -180,10 +184,10 @@ abstract class Main
         }
         $checkBuffer = preg_replace('/<!--(.|\s)*?-->/', '', $buffer);
         $isHTML = strpos(get_headers_list('Content-Type'), 'text/html') !== false;
-        $hasBacklink = strpos($checkBuffer, base64_decode('UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL2Jhc29yby5vcmcvIj5LaGFuemFMSVRFPC9hPg==')) !== false;
-        $hasHeader = get_headers_list('X-Created-By') === 'Basoro.ID <basoro.org>';
+        $hasBacklink = strpos($checkBuffer, base64_decode('UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL21saXRlLmlkLyI+bUxJVEU8L2E+')) !== false;
+        $hasHeader = get_headers_list('X-Created-By') === 'Medic LITE Indonesia <mlite.id>';
         $license = License::verify($core->settings->get('settings.license'));
-        if (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink || !$hasHeader)) {
+        if (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink)) {
             return '<center><strong>Ciluk baaa......</strong><br />Menghapus trade mark saya yaa....! Upsss....</center>';
         //} elseif ($license == License::TIME_OUT) {
         //    return $buffer.'<script>alert("Upstream Server\nCan\'t connect to server and verify it.");</script>';
@@ -197,15 +201,26 @@ abstract class Main
     public function loginCheck()
     {
         if (isset($_SESSION['mlite_user']) && isset($_SESSION['token']) && isset($_SESSION['userAgent']) && isset($_SESSION['IPaddress'])) {
-            if ($_SESSION['IPaddress'] != $_SERVER['REMOTE_ADDR']) {
-                return false;
-            }
-            if ($_SESSION['userAgent'] != $_SERVER['HTTP_USER_AGENT']) {
-                return false;
+            
+            if($this->settings->get('settings.keamanan') == 'ya') {
+                if ($_SESSION['IPaddress'] != $_SERVER['REMOTE_ADDR']) {
+                    return false;
+                }
+                if ($_SESSION['userAgent'] != $_SERVER['HTTP_USER_AGENT']) {
+                    return false;
+                }
             }
 
             if (empty(parseURL(1))) {
-                redirect(url([ADMIN, 'dashboard', 'main']));
+                if(MULTI_APP) {
+                    if(!empty(MULTI_APP_REDIRECT)) {
+                        redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                    } else {
+                        redirect(url([ADMIN, 'dashboard', 'main']));
+                    }
+                } else {
+                    redirect(url([ADMIN, 'dashboard', 'main']));
+                }
             } elseif (!isset($_GET['t']) || ($_SESSION['token'] != @$_GET['t'])) {
                 return false;
             }
@@ -228,7 +243,15 @@ abstract class Main
                         $this->db('mlite_remember_me')->where('remember_me.user_id', $token[0])->where('remember_me.token', $token[1])->save(['expiry' => time()+60*60*24*30]);
 
                         if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
-                            redirect(url([ADMIN, 'dashboard', 'main']));
+                            if(MULTI_APP) {
+                                if(!empty(MULTI_APP_REDIRECT)) {
+                                    redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                                } else {
+                                    redirect(url([ADMIN, 'dashboard', 'main']));
+                                }
+                            } else {
+                                redirect(url([ADMIN, 'dashboard', 'main']));
+                            }
                         }
 
                         return true;
@@ -271,7 +294,19 @@ abstract class Main
     public function getPoliklinikInfo($field, $kd_poli)
     {
         $row = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
-        return $row[$field];
+        return isset_or($row[$field],'');
+    }
+
+    public function getBangsalInfo($field, $kd_bangsal)
+    {
+        $row = $this->db('bangsal')->where('kd_bangsal', $kd_bangsal)->oneArray();
+        return isset_or($row[$field],'');
+    }
+
+    public function getKamarInfo($field, $kd_kamar)
+    {
+        $row = $this->db('kamar')->where('kd_kamar', $kd_kamar)->oneArray();
+        return isset_or($row[$field],'');
     }
 
     public function getPenjabInfo($field, $kd_pj)
@@ -346,9 +381,12 @@ abstract class Main
         return $_next_no_reg;
     }
 
-    public function setNoBooking($kd_dokter, $date)
+    public function setNoBooking($kd_dokter, $date, $kd_poli = null)
     {
-        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE kd_poli = '$kd_poli' AND tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+          $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        }
         $last_no_reg->execute();
         $last_no_reg = $last_no_reg->fetch();
         if(empty($last_no_reg[0])) {
@@ -359,17 +397,16 @@ abstract class Main
         return $next_no_reg;
     }
 
-    public function setNoResep()
+    public function setNoResep($date)
     {
-        $date = date('Y-m-d');
-        $last_no_resep = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,6),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date'");
+        $last_no_resep = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date' OR tgl_perawatan =  '$date'");
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
         if(empty($last_no_resep[0])) {
-          $last_no_resep[0] = '000000';
+          $last_no_resep[0] = '0000';
         }
-        $next_no_resep = sprintf('%06s', ($last_no_resep[0] + 1));
-        $next_no_resep = date('Ymd').''.$next_no_resep;
+        $next_no_resep = sprintf('%04s', ($last_no_resep[0] + 1));
+        $next_no_resep = date('Ymd', strtotime($date)).''.$next_no_resep;
 
         return $next_no_resep;
     }
@@ -392,7 +429,7 @@ abstract class Main
     public function setNoOrderRad()
     {
         $date = date('Y-m-d');
-        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
+        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_rad WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
         if(empty($last_no_order[0])) {
@@ -431,6 +468,84 @@ abstract class Main
         return $next_no;
     }
 
+    public function setNoJurnal()
+    {
+        $date = date('Y-m-d');
+        $last_no_jurnal = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM mlite_jurnal WHERE tgl_jurnal = '$date'");
+        $last_no_jurnal->execute();
+        $last_no_jurnal = $last_no_jurnal->fetch();
+        if(empty($last_no_jurnal[0])) {
+          $last_no_jurnal[0] = '000000';
+        }
+        $next_no_jurnal = sprintf('%06s', ($last_no_jurnal[0] + 1));
+        $next_no_jurnal = 'JR'.date('Ymd').''.$next_no_jurnal;
+
+        return $next_no_jurnal;
+    }
+
+    public function setPrintHeader()
+    {
+        $header = '
+            <table width="100%">
+                <tr>
+                    <td width="120" align="center"><img src="'.url().'/'.$this->settings->get('settings.logo').'" height="75px"></td>
+                    <td width="100%" align="left">
+                        <span style="font-size:32px;">'.$this->settings->get('settings.nama_instansi').'</span><br>
+                        '.$this->settings->get('settings.alamat').' - 
+                        '.$this->settings->get('settings.kota').' - 
+                        '.$this->settings->get('settings.propinsi').'<br>
+                        Telepon: '.$this->settings->get('settings.nomor_telepon').' - 
+                        E-Mail: '.$this->settings->get('settings.email').'
+                    </td>
+                </tr>
+            </table>
+            <hr style="height:1px;margin:3px;">
+            <hr style="height:3px;margin:0;">
+        ';
+        return $header;
+    }
+
+    public function setPrintFooter()
+    {
+        $footer = '
+            <table width="100%">
+                <tr>
+                    <td width="33%">Dicetak tanggal {DATE j-m-Y}</td>
+                    <td width="33%" align="center">{PAGENO}/{nbpg}</td>
+                    <td width="33%" style="text-align: right;">'.$this->settings->get('settings.nama_instansi').'</td>
+                </tr>
+            </table>
+        ';
+        return $footer;
+    }
+
+    public function setPrintCss()
+    {
+        $css = '
+        * {
+          font-family: arial, sans-serif;
+        }
+        div, table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        .table td, .table th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        .right {
+            float: right;
+        ';  
+        return $css;
+    }
+    
     public function loadModules()
     {
         if ($this->module == null) {
@@ -438,29 +553,4 @@ abstract class Main
         }
     }
 
-    private function freshInstall()
-    {
-        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
-        $pdo = QueryWrapper::pdo();
-
-        $core = $this;
-
-        $modules = unserialize(BASIC_MODULES);
-        foreach ($modules as $module) {
-            $file = MODULES.'/'.$module.'/Info.php';
-
-            if (file_exists($file)) {
-                $info = include($file);
-                if (isset($info['install'])) {
-                    $info['install']();
-                }
-            }
-        }
-
-        foreach ($modules as $order => $name) {
-            $core->db('mlite_modules')->save(['dir' => $name, 'sequence' => $order]);
-        }
-
-        redirect(url());
-    }
 }

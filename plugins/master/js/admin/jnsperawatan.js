@@ -57,14 +57,14 @@ $("#form").on("click", "#simpan", function(event){
     total_byrdrpr: total_byrdrpr,
     kd_pj: kd_pj,
     kd_poli: kd_poli,
-    status: status  
+    status: status
   } ,function(data) {
       $("#display").show().load(baseURL + '/master/jnsperawatandisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
       $("#tutupform").attr("id", "bukaform");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data bahasa telah disimpan!"+
+      "Data telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
   });
@@ -146,6 +146,16 @@ $("#display").on("click", ".halaman",function(event){
 
 });
 // end halaman
+
+$("#form").on("click","#kd_jenis_prw", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/master/jnsperawatanmaxid?t=' + mlite.token;
+  $.post(url, {
+  } ,function(data) {
+    $("#kd_jenis_prw").val(data);
+  });
+});
 
 function bersih(){
   $('input:text[name=id]').val("").removeAttr('disabled');

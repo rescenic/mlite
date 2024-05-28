@@ -4,6 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
+
 class Penjab
 {
 
@@ -43,7 +44,8 @@ class Penjab
             'nama_perusahaan' => '',
             'alamat_asuransi' => '',
             'no_telp' => '',
-            'attn' => ''
+            'attn' => '', 
+            'penjab' => ''
           ];
         }
 

@@ -4,6 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
+
 class Petugas
 {
 

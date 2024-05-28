@@ -24,8 +24,9 @@
         <th>Berat(Kg)</th>
         <th>SPO2</th>
         <th>GCS(E,V,M)</th>
+        <th>SPO2</th>
         <th>Alergi</th>
-        <th>Instruksi</th>
+        <th>Instruksi & Evaluasi</th>
       </tr>
     </thead>
     <tbody>
@@ -45,9 +46,15 @@
         <td>{$value.berat}</td>
         <td></td>
         <td>{$value.gcs}</td>
+        <td>{$value.spo2}</td>
         <td>{$value.alergi}</td>
         <td rowspan="7" style="vertical-align:top;">
+<<<<<<< HEAD
           <!-- {$value.instruksi}  --><br><br>
+=======
+          Instruksi: {$value.instruksi}<br><br>
+          Evaluasi: {$value.evaluasi}<br><br>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           <div class="qrcodePetugas{$value.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
           <!-- {$value.nama_petugas} -->
           <script>
@@ -61,6 +68,7 @@
       </tr>
       <tr>
         <th colspan="2">Kesadaran</th>
+<<<<<<< HEAD
         <!-- <td colspan="7">{$value.kesadaran}</td> -->
         <td colspan="7" style="vertical-align:top">{?=nl2br($value.kesadaran)?}</td>
       </tr>
@@ -83,10 +91,32 @@
         <!-- <td colspan="7">{$value.penilaian}</td> -->
       </tr>
 
+=======
+        <td colspan="7">{$value.kesadaran}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Lingkar Perut</th>
+        <td colspan="7">{$value.lingkar_perut}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Subyektif</th>
+        <td colspan="7">{$value.keluhan}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Obyektif</th>
+        <td colspan="7">{$value.pemeriksaan}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Assesment</th>
+        <td colspan="7">{$value.penilaian}</td>
+      </tr>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       <tr>
         <td>
           <div class="">
+            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $value.nip}
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
+<<<<<<< HEAD
               data-no_rawat="{$value.no_rawat}" data-tgl_perawatan="{$value.tgl_perawatan}"
               data-jam_rawat="{$value.jam_rawat}" data-suhu_tubuh="{$value.suhu_tubuh}" data-tensi="{$value.tensi}"
               data-nadi="{$value.nadi}" data-respirasi="{$value.respirasi}" data-tinggi="{$value.tinggi}"
@@ -104,6 +134,41 @@
         <!-- <td colspan="7">{$value.rtl}</td> -->
         <td colspan="7" style="vertical-align:top">{?=nl2br($value.rtl)?}</td>
 
+=======
+              data-no_rawat="{$value.no_rawat}"
+              data-tgl_perawatan="{$value.tgl_perawatan}"
+              data-jam_rawat="{$value.jam_rawat}"
+              data-suhu_tubuh="{$value.suhu_tubuh}"
+              data-tensi="{$value.tensi}"
+              data-nadi="{$value.nadi}"
+              data-respirasi="{$value.respirasi}"
+              data-tinggi="{$value.tinggi}"
+              data-berat="{$value.berat}"
+              data-gcs="{$value.gcs}"
+              data-kesadaran="{$value.kesadaran}"
+              data-alergi="{$value.alergi}"
+              data-lingkar_perut="{$value.lingkar_perut}"
+              data-keluhan="{$value.keluhan}"
+              data-pemeriksaan="{$value.pemeriksaan}"
+              data-penilaian="{$value.penilaian}"
+              data-rtl="{$value.rtl}"
+              data-instruksi="{$value.instruksi}"
+              data-evaluasi="{$value.evaluasi}"
+              data-spo2="{$value.spo2}"
+              disabled
+              ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
+            <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
+              data-no_rawat="{$value.no_rawat}"
+              data-tgl_perawatan="{$value.tgl_perawatan}"
+              data-jam_rawat="{$value.jam_rawat}"
+              disabled
+              ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
+            {/if}
+          </div>
+        </td>
+        <th colspan="2">Plan</th>
+        <td colspan="7">{$value.rtl}</td>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       </tr>
       {/loop}
       {loop: $pemeriksaan_ranap as $data}
@@ -132,9 +197,11 @@
         <td>{$data.berat}</td>
         <td>{$data.spo2}</td>
         <td>{$data.gcs}</td>
+        <td>{$data.spo2}</td>
         <td>{$data.alergi}</td>
           <!-- <td>{?=nl2br($data2.keterangan)?}</td> -->
         <td rowspan="6" style="vertical-align:top;">
+<<<<<<< HEAD
           {if: $data.bidang != 'Mubarak' }
           <h4 style="color: black; vertical-align:top">Instruksi<br><br></h4>
            {?=nl2br($data.instruksi)?}<br><br>
@@ -142,6 +209,11 @@
           <h4 style="color: black; vertical-align:top">Evaluasi<br><br></h4>
           {?=nl2br($data.evaluasi)?}<br><br>
           <!-- <div class="qrcodePetugas{$data.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
+=======
+          Instruksi: {$data.instruksi}<br><br>
+          Evaluasi: {$data.evaluasi}<br><br>
+          <div class="qrcodePetugas{$data.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           {$data.nama_petugas}
           <script>
           	jQuery('.qrcodePetugas{$data.nomor}').qrcode({
@@ -156,6 +228,7 @@
         </td> -->
       </tr>
       <tr>
+<<<<<<< HEAD
         <!-- <th colspan="2">Kesadaran</th>
         <td colspan="6">{$data.kesadaran}</td> -->
       </tr>
@@ -254,6 +327,58 @@
         {/if}
         <td colspan="7" style="vertical-align:top">{?=nl2br($data.rtl)?}</td>
 
+=======
+        <th colspan="2">Kesadaran</th>
+        <td colspan="7">{$data.kesadaran}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Subyektif</th>
+        <td colspan="7">{$data.keluhan}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Obyektif</th>
+        <td colspan="7">{$data.pemeriksaan}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Assesment</th>
+        <td colspan="7">{$data.penilaian}</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="">
+            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $data.nip}
+            <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
+              data-no_rawat="{$data.no_rawat}"
+              data-tgl_perawatan="{$data.tgl_perawatan}"
+              data-jam_rawat="{$data.jam_rawat}"
+              data-suhu_tubuh="{$data.suhu_tubuh}"
+              data-tensi="{$data.tensi}"
+              data-nadi="{$data.nadi}"
+              data-respirasi="{$data.respirasi}"
+              data-tinggi="{$data.tinggi}"
+              data-berat="{$data.berat}"
+              data-gcs="{$data.gcs}"
+              data-kesadaran="{$data.kesadaran}"
+              data-alergi="{$data.alergi}"
+              data-keluhan="{$data.keluhan}"
+              data-pemeriksaan="{$data.pemeriksaan}"
+              data-penilaian="{$data.penilaian}"
+              data-rtl="{$data.rtl}"
+              data-instruksi="{$data.instruksi}"
+              data-evaluasi="{$value.evaluasi}"
+              data-spo2="{$value.spo2}"
+              ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
+            <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
+              data-no_rawat="{$data.no_rawat}"
+              data-tgl_perawatan="{$data.tgl_perawatan}"
+              data-jam_rawat="{$data.jam_rawat}"
+              ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
+            {/if}
+          </div>
+        </td>
+        <th colspan="2">Plan</th>
+        <td colspan="7">{$data.rtl}</td>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       </tr>
       {/loop}
     </tbody>

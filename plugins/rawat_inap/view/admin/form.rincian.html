@@ -93,9 +93,13 @@
                 <option>Pilih provider</option>
                 <option value="rawat_inap_dr">Dokter</option>
                 <option value="rawat_inap_pr">Perawat</option>
+<<<<<<< HEAD
                 <!-- <option value="rawat_inap_pr">{if: $this->core->getUserInfo('role') == 'apoteker'}Apoteker{else}Perawat {/if}</option> -->
                 <option value="rawat_inap_drpr">Dokter & Perawat</option>
                 <option value="rawat_inap_far">Apoteker</option>
+=======
+                <option value="rawat_inap_drpr">Dokter & Perawat</option>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               </select>
             </div>
           </div>
@@ -283,11 +287,15 @@
   $(function() {
       $('#rawat_inap_dr').hide();
       $('#rawat_inap_pr').hide();
+<<<<<<< HEAD
       $('#rawat_inap_far').hide();
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       $('#pilih_provider').change(function(){
           if($('#pilih_provider').val() == 'rawat_inap_dr') {
               $('#rawat_inap_dr').show();
               $('#rawat_inap_pr').hide();
+<<<<<<< HEAD
               $('#rawat_inap_far').hide();
           } else if($('#pilih_provider').val() == 'rawat_inap_pr') {
               $('#rawat_inap_dr').hide();
@@ -297,6 +305,11 @@
               $('#rawat_inap_dr').hide();
               $('#rawat_inap_pr').hide();
               $('#rawat_inap_far').show();
+=======
+          } else if($('#pilih_provider').val() == 'rawat_inap_pr') {
+              $('#rawat_inap_dr').hide();
+              $('#rawat_inap_pr').show();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           } else {
               $('#rawat_inap_dr').show();
               $('#rawat_inap_pr').show();

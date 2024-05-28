@@ -1,3 +1,6 @@
+<style>
+  .table th, td { white-space: nowrap; }
+</style>
 <div id="display">
   <div class="table-responsive no-margin">
     <table class="table table-striped no-padding" width="100%">
@@ -25,11 +28,19 @@
             <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{$value.no_rkm_medis} <span class="caret"></span></button></span>
             <ul class="dropdown-menu" role="menu">
               {if: $cek_vclaim}
-                <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor Kartu</a></li>
-                <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynik', $value.no_ktp, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor KTP</a></li>
+                <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[VClaim] Cek Nomor Kartu</a></li>
+                <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynik', $value.no_ktp, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[VClaim] Cek Nomor KTP</a></li>
               {/if}
+<<<<<<< HEAD
               <li><a href="{?=url([ADMIN, 'pasien', 'resumeperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
              <!--  <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Riwayat Perawatan</a></li> -->
+=======
+              {if: $cek_pcare}
+                <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynokartu', 'noka', $value.no_peserta])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor Kartu</a></li>
+                <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynik', 'nik', $value.no_ktp])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor KTP</a></li>
+              {/if}
+              <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
             </ul>
           </td>
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
@@ -131,14 +142,14 @@
 </div>
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
-  $("#btn_cetak").click(function() {
+  $("#btn_cetak_pdf").click(function() {
     var baseURL = mlite.url + '/' + mlite.admin;
     var url    = baseURL + '/pasien/cetak?t=' + mlite.token;
     var cari = $('input:text[name=cari]').val();
 
     $.post(url, {cari: cari} ,function(data) {
       //window.open(baseURL + '/pasien/cetakpdf?t=' + mlite.token);
-      $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/pasien/cetakpdf?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+      $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/pasien/cetakmpdf?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
     });
 
 		return false;

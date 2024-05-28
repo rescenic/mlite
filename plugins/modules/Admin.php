@@ -215,7 +215,7 @@ class Admin extends AdminModule
                     $other['basic'] = false;
                 }
 
-                $other['compatible'] = $this->checkCompatibility(isset_or($details['compatibility'], '2022'));
+                $other['compatible'] = $this->checkCompatibility(isset_or($details['compatibility'], '4.0.0'));
                 $result[] = $details + $urls + $other;
             }
         }
@@ -232,13 +232,13 @@ class Admin extends AdminModule
             $filename = $zip->getNameIndex($i);
 
             if (empty($path) || strpos($filename, $path) == 0) {
-                $file = $to.'/'.str_replace($path, null, $filename);
+                $file = $to.'/'.str_replace($path, '', $filename);
                 if (!file_exists(dirname($file))) {
                     mkdir(dirname($file), 0777, true);
                 }
 
                 if (substr($file, -1) != '/') {
-                    file_put_contents($to.'/'.str_replace($path, null, $filename), $zip->getFromIndex($i));
+                    file_put_contents($to.'/'.str_replace($path, '', $filename), $zip->getFromIndex($i));
                 }
             }
         }
@@ -250,6 +250,6 @@ class Admin extends AdminModule
     {
         $systemVersion = $this->settings('settings', 'version');
         $version = str_replace(['.', '*'], ['\\.', '[0-9]+'], $version);
-        return preg_match('/^'.$version.'[a-z]*$/', substr($systemVersion, 0, 4));
+        return preg_match('/^'.$version.'[a-z]*$/', $systemVersion);
     }
 }

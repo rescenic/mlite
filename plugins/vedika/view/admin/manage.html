@@ -21,6 +21,20 @@
     background-color: #4C9A2A;
   }
 </style>
+<<<<<<< HEAD
+=======
+<h4>
+  Periode Klaim {?=bulan(date('m', strtotime($periode)))?} {?=date('Y', strtotime($periode))?}
+  <span class="pull-right">
+    <form class="" action="" method="">
+      <input type="text" name="periode" class="tanggal" value="" placeholder="Pilih periode">
+      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+      <input type="submit" value="Go">
+    </form>
+  </span>
+</h4>
+<br>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 <div class="row">
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
@@ -28,6 +42,7 @@
                     <span class="fa-3x fa-stack fa-lg pull-left">
                         <i class="fa fa-calendar-plus-o fa-stack-1x"></i>
                     </span>
+<<<<<<< HEAD
                     <div class="stat-title text-grey">Rencana Klaim ({?=number_format((($stats.rencanaRalan+$stats.rencanaRanap)/$stats.totalKlaim)*100, 2, '.', '')?}%)</div>
                     <div class="stat-bold">
                       Ralan : <b>{$stats.KlaimRalan}</b> ({?=number_format(($stats.rencanaRalan/$stats.KlaimRalan)*100, 2, '.', '')?}%)<br>
@@ -109,14 +124,108 @@
                             </div>
                             <h4><b>{$value.name}</b></h4>
                         </a>
+=======
+                    <div class="stat-title text-grey">Rencana Klaim</div>
+                    <div class="stat-bold">
+                      Ralan : <b>{$stats.KlaimRalan}</b> ({?=number_format(($stats.rencanaRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.KlaimRanap}</b> ({?=number_format(($stats.rencanaRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                     </div>
-                </li>
-                {/loop}
-            </ul>
+              </div>
         </div>
     </div>
+<<<<<<< HEAD
 </article>
 
+=======
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-info">
+                    <span class="fa-3x fa-stack fa-lg pull-left">
+                        <i class="fa fa-calendar fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Status Lengkap</div>
+                    <div class="stat-bold">
+                      Ralan : <b>{$stats.LengkapRalan}</b> ({?=number_format(($stats.LengkapRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.LengkapRanap}</b> ({?=number_format(($stats.LengkapRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-warning">
+                    <span class="fa-3x fa-stack fa-lg pull-left">
+                        <i class="fa fa-users fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Status Pengajuan</div>
+                    <div class="stat-bold">
+                      Ralan : <b>{$stats.PengajuanRalan}</b> ({?=number_format(($stats.PengajuanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.PengajuanRanap}</b> ({?=number_format(($stats.PengajuanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-success">
+                    <span class="fa-3x fa-stack fa-lg pull-left">
+                        <i class="fa fa-wheelchair fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Status Perbaikan</div>
+                    <div class="stat-bold">
+                      Ralan : <b>{$stats.PerbaikanRalan} / <span class="text-danger">{$stats.PerbaikanRalan1}</span></b> ({?=number_format(($stats.PerbaikanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.PerbaikanRanap} / <span class="text-danger">{$stats.PerbaikanRanap1}</span></b> ({?=number_format(($stats.PerbaikanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+                    </div>
+              </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Maturasi Klaim BPJS Dalam %</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="line-chartcanvas" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <ul class="modules" style="padding:0;margin:0;">
+            {loop: $sub_modules}
+            <li class="module">
+                <div class="panel panel-default">
+                    <a href="{$value.url}" class="panel-body text-center">
+                        <div class="panel-thumb">
+                            <i class="fa fa-{$value.icon}"></i>
+                            <div class="desc">
+                                {$value.desc}
+                            </div>
+                        </div>
+                        <h4><b>{$value.name}</b></h4>
+                    </a>
+                </div>
+            </li>
+            {/loop}
+        </ul>
+    </div>
+</div>
+
+<script>
+  $( function() {
+    $('.tanggal').datetimepicker({
+      format: 'YYYY-MM',
+      locale: 'id'
+    });
+  } );
+</script>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 <script type="text/javascript">
     $(function () {
         //line chart
@@ -127,7 +236,11 @@
           data: {
             labels: dataLabel,
             datasets: [{
+<<<<<<< HEAD
               data: [{?=number_format((($stats.rencanaRalan+$stats.rencanaRanap)/$stats.totalKlaim)*100, 2, '.', '')?}, {?=number_format((($stats.LengkapRalan+$stats.PengajuanRalan)/$stats.KlaimRalan)*100, 2, '.', '')?}, {?=number_format((($stats.LengkapRanap+$stats.PengajuanRanap)/$stats.KlaimRanap)*100, 2, '.', '')?}], 
+=======
+              data: [{?=number_format((($stats.rencanaRalan+$stats.rencanaRanap)/($stats.totalKlaim ?: 1))*100, 2, '.', '')?}, {?=number_format((($stats.LengkapRalan+$stats.PengajuanRalan)/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}, {?=number_format((($stats.LengkapRanap+$stats.PengajuanRanap)/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}],
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -186,7 +299,11 @@
               }
             }
           }
+<<<<<<< HEAD
         });      
+=======
+        });
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
     });
 

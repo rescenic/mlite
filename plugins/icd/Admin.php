@@ -2,6 +2,7 @@
 namespace Plugins\Icd;
 
 use Systems\AdminModule;
+
 use Plugins\Icd\DB_ICD;
 
 class Admin extends AdminModule
@@ -121,7 +122,7 @@ class Admin extends AdminModule
   public function getDisplay()
   {
     $no_rawat = $_GET['no_rawat'];
-    $prosedurs = $this->core->db('prosedur_pasien')
+    $prosedurs = $this->db('prosedur_pasien')
       ->where('no_rawat', $no_rawat)
       ->asc('prioritas')
       ->toArray();
@@ -132,7 +133,7 @@ class Admin extends AdminModule
       $prosedur[] = $row_prosedur;
     }
 
-    $diagnosas = $this->core->db('diagnosa_pasien')
+    $diagnosas = $this->db('diagnosa_pasien')
       ->where('no_rawat', $no_rawat)
       ->asc('prioritas')
       ->toArray();
@@ -157,6 +158,38 @@ class Admin extends AdminModule
   {
     $this->db('prosedur_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
     exit();
+  }
+
+  public function postSimpan_ICD9()
+  {
+    $dbFile = BASE_DIR.'/systems/data/icd.sdb';
+    $db = new \PDO('sqlite:'.$dbFile);
+    if($_POST['simpan_icd9']) {
+      $cek = $this->data_icd('icd9')->where('kode', $_POST['kode_icd9'])->oneArray();
+      if(!$cek) {
+        $db->query("INSERT INTO icd9 (kode,nama) VALUES ('{$_POST['kode_icd9']}', '{$_POST['nama_icd9']}')");
+      } else {
+        $db->query("UPDATE icd9 SET nama='{$_POST['nama_icd9']}' WHERE kode='{$_POST['kode_icd9']}'");
+      }
+      $this->notify('success', 'Data ICD telah disimpan');
+    }
+    redirect(url([ADMIN, 'icd', 'manage']));
+  }
+
+  public function postSimpan_ICD10()
+  {
+    $dbFile = BASE_DIR.'/systems/data/icd.sdb';
+    $db = new \PDO('sqlite:'.$dbFile);
+    if($_POST['simpan_icd10']) {
+      $cek = $this->data_icd('icd10')->where('kode', $_POST['kode_icd10'])->oneArray();
+      if(!$cek) {
+        $db->query("INSERT INTO icd10 (kode,nama) VALUES ('{$_POST['kode_icd10']}', '{$_POST['nama_icd10']}')");
+      } else {
+        $db->query("UPDATE icd10 SET nama='{$_POST['nama_icd10']}' WHERE kode='{$_POST['kode_icd10']}'");
+      }
+      $this->notify('success', 'Data ICD telah disimpan');
+    }
+    redirect(url([ADMIN, 'icd', 'manage']));
   }
 
   protected function data_icd($table)

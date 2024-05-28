@@ -28,11 +28,17 @@ class Site extends Main
     private function drawTheme($file)
     {
         $assign = [];
-        $username = $this->getUserInfo('fullname', null, true);
+        $username = '';
+        if(isset($_SESSION['mlite_user'])) {
+          $username = $this->getUserInfo('fullname', null, true);
+        }
         $assign['tanggal']       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
+        $assign['username'] = '';
+        if(isset($_SESSION['mlite_user'])) {
+          $assign['username'] = !empty($username) ? $username : $this->getUserInfo('username');
+        }
         $assign['notify']   = $this->getNotify();
-        $assign['powered']  = 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>';
+        $assign['powered']  = 'Powered by <a href="https://mlite.id/">mLITE</a>';
         $assign['path']     = url();
         $assign['nama_instansi']    = $this->settings->get('settings.nama_instansi');
         $assign['alamat']    = $this->settings->get('settings.alamat');
@@ -42,9 +48,16 @@ class Site extends Main
         $assign['email']    = $this->settings->get('settings.email');
         $assign['theme']    = url(THEMES.'/'.$this->settings->get('settings.theme'));
         $assign['logo'] = $this->settings->get('settings.logo');
+        $assign['wallpaper'] = $this->settings->get('settings.wallpaper');
         $assign['theme_admin'] = $this->settings->get('settings.theme_admin');
         $assign['version']       = $this->settings->get('settings.version');
         $assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
+
+        $assign['poliklinik'] = '';
+        if($assign['cek_anjungan']) {
+          $assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
+        }
+
         $assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
 
         $assign['header']   = isset_or($this->appends['header'], ['']);
@@ -68,4 +81,31 @@ class Site extends Main
             return false;
         }
     }
+
+    private function _getPoliklinik($kd_poli = null)
+    {
+        $result = [];
+        $rows = $this->db('poliklinik')->toArray();
+
+        if (!$kd_poli) {
+            $kd_poliArray = [];
+        } else {
+            $kd_poliArray = explode(',', $kd_poli);
+        }
+
+        foreach ($rows as $row) {
+            if (empty($kd_poliArray)) {
+                $attr = '';
+            } else {
+                if (in_array($row['kd_poli'], $kd_poliArray)) {
+                    $attr = 'selected';
+                } else {
+                    $attr = '';
+                }
+            }
+            $result[] = ['kd_poli' => $row['kd_poli'], 'nm_poli' => $row['nm_poli'], 'attr' => $attr];
+        }
+        return $result;
+    }
+
 }

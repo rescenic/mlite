@@ -39,6 +39,7 @@
       .marquee {
         width: 100%;
         overflow: scroll;
+        height:calc(75vh);
         /* border: 1px solid #ccc; */
         background:#0264d6;
       }
@@ -56,7 +57,7 @@
       </tr>
     </thead>
   </table>
-  <div class="marquee" data-direction='up' data-duration='20000' startVisible='true' data-gap='10' data-duplicated='true' >
+  <div class="marquee" data-direction='up' data-duration='20000' startVisible='true' data-gap='10' data-duplicated='false' >
   <table class="table table-bordered table-striped lead text-primary">
     <tbody>
       {loop: $display}

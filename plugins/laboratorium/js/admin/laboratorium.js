@@ -71,7 +71,8 @@ $("#form").on("click", "#simpan", function(event){
   var kd_poli = $('select[name=kd_poli]').val();
   var kd_dokter = $('select[name=kd_dokter]').val();
   var kd_pj = $('select[name=kd_pj]').val();
-  var stts_daftar = $('input:text[name=stts_daftar]').val();
+  //var stts_daftar = $('input:text[name=stts_daftar]').val();
+  var stts_daftar = $('input:hidden[name=stts_daftar]').val();
 
   var url = baseURL + '/laboratorium/save?t=' + mlite.token;
 
@@ -111,7 +112,35 @@ $("#rincian").on("click","#cetak_hasil", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat = $('input:text[name=no_rawat]').val();
-  window.open(baseURL + '/laboratorium/cetakhasil?no_rawat=' + no_rawat + '&t=' + mlite.token);
+  var status = $('input:text[name=status]').val();
+  window.open(baseURL + '/laboratorium/cetakhasil?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+});
+
+$("#rincian").on("click",".cetak_hasil", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  var tgl_periksa = $(this).attr("data-tgl_periksa");
+  var jam = $(this).attr("data-jam_periksa");
+  window.open(baseURL + '/laboratorium/cetakhasil?no_rawat=' + no_rawat + '&tgl_periksa=' + tgl_periksa + '&jam=' + jam + '&status=' + status + '&t=' + mlite.token);
+});
+
+$("#rincian").on("click","#cetak_permintaan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  window.open(baseURL + '/laboratorium/cetakpermintaan?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+});
+
+$("#rincian").on("click",".cetak_permintaan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  var noorder = $(this).attr("data-noorder");
+  window.open(baseURL + '/laboratorium/cetakpermintaan?noorder=' + noorder + '&no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
 });
 
 $("#display").on("click",".riwayat_perawatan", function(event){
@@ -248,6 +277,7 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
   var url    = baseURL + '/laboratorium/display?t=' + mlite.token;
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -256,7 +286,8 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status: status} ,function(data) {
+    console.log(data);
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -279,6 +310,7 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'belum';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -287,7 +319,7 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status } ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -310,6 +342,7 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'selesai';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -318,7 +351,7 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -341,6 +374,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'lunas';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -349,7 +383,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -442,6 +476,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
+  var status          = $('input:text[name=status]').val();
 
   var url = baseURL + '/laboratorium/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -453,12 +488,13 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
   kat            : kat,
-  jml            : jml
+  jml            : jml,
+  status         : status
   }, function(data) {
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
-    $.post(url, {no_rawat : no_rawat,
+    $.post(url, {no_rawat : no_rawat, status: status
     }, function(data) {
       // tampilkan data
       $("#rincian").html(data).show();
@@ -486,6 +522,7 @@ $("#rincian").on("click",".hapus_laboratorium", function(event){
   var tgl_perawatan = $(this).attr("data-tgl_periksa");
   var jam_rawat = $(this).attr("data-jam_periksa");
   var provider = $(this).attr("data-provider");
+  var status = $('input:text[name=status]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -500,7 +537,7 @@ $("#rincian").on("click",".hapus_laboratorium", function(event){
         provider: provider
       } ,function(data) {
         var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
-        $.post(url, {no_rawat : no_rawat,
+        $.post(url, {no_rawat : no_rawat, status: status
         }, function(data) {
           // tampilkan data
           $("#rincian").html(data).show();
@@ -577,4 +614,22 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
 
 $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal');
+});
+
+$("#form").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/laboratorium/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form #jam_reg").val(data);
+    });
+});
+
+$("#form_rincian").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/laboratorium/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_rincian #jam_reg").val(data);
+    });
 });

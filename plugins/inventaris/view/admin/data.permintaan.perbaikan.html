@@ -19,6 +19,7 @@
             <tr>
               <th>No. Permintaan</th>
               <th>No. Inventaris</th>
+<<<<<<< HEAD
               <th>Nama Aset/Barang</th>
               <th>Pemohon Perbaikan</th>
               <th>Tanggal Permintaan</th>
@@ -26,6 +27,12 @@
               <th>Status</th>
               <th>Petugas</th>
               <th>Berkas</th>
+=======
+              <th>Pemohon Perbaikan</th>
+              <th>Tanggal</th>
+              <th>Deskripsi Kerusakan</th>
+              <th>Status</th>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               <th>Aksi</th>
             </tr>
           </thead>
@@ -34,11 +41,15 @@
             <tr>
               <td>{$value.no_permintaan}</td>
               <td>{$value.no_inventaris}</td>
+<<<<<<< HEAD
               <td>{$value.nama_barang} [{$value.nama_merk}] - {$value.nama_ruang}</td>
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               <td>{$value.nik} - {$value.nama}</td>
               <td>{$value.tanggal}</td>
               <td>{$value.deskripsi_kerusakan}</td>
               <td class="text-{if: $value.status_perbaikan == 'Sudah'}primary{else}danger{/if}">{$value.status_perbaikan}</td>
+<<<<<<< HEAD
               <td>{$value.nama_petugas}</td>
               <td>{if: $value.status_perbaikan == 'Sudah'}
                 <a href="{?=url([ADMIN, 'inventaris', 'lembarperbaikan', $value.no_permintaan])?}" class="btn btn-xs btn-success">
@@ -48,6 +59,12 @@
                 <a href="{$value.tampil}" class="btn btn-xs btn-primary"><i class="fa fa-search"></i> Tampil</a>
                 <a href="{$value.ubah}" class="btn btn-xs btn-info"><i class="fa fa-edit"></i> Ubah</a>
                 <a href="{$value.hapus}" class="btn btn-xs btn-danger" data-confirm="Anda yakin akan menghapus data ini?"><i class="fa fa-trash"></i> Hapus</a>
+=======
+              <td>
+                <a href="{$value.tampil}" class="btn btn-xs btn-primary"><i class="fa fa-search"></i> Tampil</a>
+                <a href="{$value.ubah}" class="btn btn-xs btn-info"><i class="fa fa-edit"></i> Ubah</a>
+                <a href="{$value.hapus}" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Hapus</a>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               </td>
             </tr>
             {/loop}

@@ -43,6 +43,7 @@ class Admin extends AdminModule
       if($perbaikan_inventaris) {
         $row['status_perbaikan'] = 'Sudah';
       }
+<<<<<<< HEAD
 
       $detail_aset = $this->db('inventaris')
         ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
@@ -59,11 +60,17 @@ class Admin extends AdminModule
 
     
 
+=======
+      $perbaikan[] = $row;
+    }
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $peminjaman = $this->db('inventaris_peminjaman')
       ->where('tgl_pinjam', '>=', $date_start)
       ->where('tgl_pinjam', '<=', $date_end)
       ->toArray();
 
+<<<<<<< HEAD
     return $this->draw('manage.html', [
       'tgl_awal' => $date_start, 
       'tgl_akhir' => $date_end, 
@@ -71,6 +78,9 @@ class Admin extends AdminModule
       'pemeliharaan' => $pemeliharaan, 
       'perbaikan' => $perbaikan, 
       'peminjaman' => $peminjaman]);
+=======
+    return $this->draw('manage.html', ['tgl_awal' => $date_start, 'tgl_akhir' => $date_end, 'aset' => $aset, 'pemeliharaan' => $pemeliharaan, 'perbaikan' => $perbaikan, 'peminjaman' => $peminjaman]);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   }
 
   public function getDataAset()
@@ -120,8 +130,11 @@ class Admin extends AdminModule
     $pemeliharaan = $this->db('pemeliharaan_inventaris')
       ->join('inventaris', 'inventaris.no_inventaris=pemeliharaan_inventaris.no_inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+<<<<<<< HEAD
       ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
       ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       ->join('pegawai', 'pegawai.nik=pemeliharaan_inventaris.nip')
       ->toArray();
     return $this->draw('data.pemeliharaan.html', ['pemeliharaan' => $pemeliharaan]);
@@ -136,14 +149,20 @@ class Admin extends AdminModule
     $perbaikan = [];
     foreach ($rows as $row) {
       $perbaikan_inventaris = $this->db('perbaikan_inventaris')
+<<<<<<< HEAD
         ->join('pegawai', 'pegawai.nik=perbaikan_inventaris.nip')
         ->where('no_permintaan', $row['no_permintaan'])
         ->oneArray();
 
+=======
+        ->where('no_permintaan', $row['no_permintaan'])
+        ->oneArray();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       $row['status_perbaikan'] = 'Belum';
       if($perbaikan_inventaris) {
         $row['status_perbaikan'] = 'Sudah';
       }
+<<<<<<< HEAD
 
       $row['nama_petugas'] = $perbaikan_inventaris['nama'];
 
@@ -158,6 +177,8 @@ class Admin extends AdminModule
       $row['nama_ruang'] = $aset['nama_ruang'];
 
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       $row['tampil'] = url([ADMIN,'inventaris','permintaanperbaikandetail',$row['no_permintaan']]);
       $row['ubah'] = url([ADMIN,'inventaris','permintaanperbaikanubah',$row['no_permintaan']]);
       $row['hapus'] = url([ADMIN,'inventaris','permintaanperbaikanhapus',$row['no_permintaan']]);
@@ -180,6 +201,7 @@ class Admin extends AdminModule
 
     $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+<<<<<<< HEAD
       ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
       ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
       ->asc('inventaris_barang.nama_barang')
@@ -189,6 +211,9 @@ class Admin extends AdminModule
       // ->asc('inventaris_barang.nama_barang')
       // ->toArray();
        
+=======
+      ->toArray();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
@@ -202,9 +227,12 @@ class Admin extends AdminModule
       ->oneArray();
     $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+<<<<<<< HEAD
       ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
       ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
       ->asc('inventaris_barang.nama_barang')
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       ->toArray();
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
@@ -216,10 +244,13 @@ class Admin extends AdminModule
   {
     $permintaan_perbaikan_inventaris = $this->db('permintaan_perbaikan_inventaris')
       ->join('pegawai', 'pegawai.nik=permintaan_perbaikan_inventaris.nik')
+<<<<<<< HEAD
       ->join('inventaris', 'inventaris.no_inventaris=permintaan_perbaikan_inventaris.no_inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
       ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       ->where('no_permintaan', $no_permintaan)
       ->oneArray();
     $perbaikandetail = $this->db('perbaikan_inventaris')
@@ -375,6 +406,7 @@ class Admin extends AdminModule
 
     $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+<<<<<<< HEAD
       ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
       ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
       ->asc('inventaris_barang.nama_barang')
@@ -382,6 +414,9 @@ class Admin extends AdminModule
     // $this->assign['aset'] = $this->db('inventaris')
     //   ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
     //   ->toArray();
+=======
+      ->toArray();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
@@ -656,7 +691,11 @@ class Admin extends AdminModule
     redirect(url([ADMIN, 'inventaris', 'inventarisruang']));
   }
 
+<<<<<<< HEAD
    public function getPeminjaman()
+=======
+  public function getPeminjaman()
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   {
     $this->_addHeaderFiles();
     $inventaris_peminjaman = $this->db('inventaris_peminjaman')
@@ -666,15 +705,22 @@ class Admin extends AdminModule
       ->toArray();
     $inventaris = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+<<<<<<< HEAD
       ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
       ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
       ->asc('inventaris_barang.nama_barang')
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       ->toArray();
     $pegawai = $this->db('pegawai')->toArray();
     return $this->draw('data.peminjaman.html', ['inventaris_peminjaman' => $inventaris_peminjaman, 'inventaris' => $inventaris, 'pegawai' => $pegawai]);
   }
 
+<<<<<<< HEAD
 public function postSavePeminjaman()
+=======
+  public function postSavePeminjaman()
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
@@ -705,6 +751,7 @@ public function postSavePeminjaman()
     redirect(url([ADMIN, 'inventaris', 'peminjaman']));
   }
 
+<<<<<<< HEAD
   public function getLembarperbaikan($no_permintaan)
   {
       $permintaan_perbaikan = $this->db('permintaan_perbaikan_inventaris')
@@ -784,6 +831,8 @@ public function postSavePeminjaman()
     }
 
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   public function getCss()
   {
       header('Content-type: text/css');

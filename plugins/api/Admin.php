@@ -13,6 +13,7 @@ class Admin extends AdminModule
             'Notifikasi APAM' => 'notifikasi',
             'Pengaturan APAM' => 'settingsapam',
             'Payment Duitku' => 'paymentduitku',
+            'Pengaturan API Key' => 'settingskey',
         ];
     }
 
@@ -22,6 +23,7 @@ class Admin extends AdminModule
         ['name' => 'Notifikasi APAM', 'url' => url([ADMIN, 'api', 'notifikasi']), 'icon' => 'database', 'desc' => 'Notifikasi APAM API'],
         ['name' => 'Pengaturan APAM', 'url' => url([ADMIN, 'api', 'settingsapam']), 'icon' => 'database', 'desc' => 'Pengaturan APAM API'],
         ['name' => 'Payment Duitku', 'url' => url([ADMIN, 'api', 'paymentduitku']), 'icon' => 'database', 'desc' => 'Pengaturan e-Payment API'],
+        ['name' => 'Pengaturan API Key', 'url' => url([ADMIN, 'api', 'settingskey']), 'icon' => 'database', 'desc' => 'Pengaturan API Key'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -147,7 +149,7 @@ class Admin extends AdminModule
     {
         $this->assign['title'] = 'Pengaturan Modul API';
         $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
-        $this->assign['penjab'] = $this->db('penjab')->toArray();
+        $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         return $this->draw('settings.apam.html', ['settings' => $this->assign]);
     }
 
@@ -174,102 +176,80 @@ class Admin extends AdminModule
     }
     /* End Settings Farmasi Section */
 
+    /* Settings Section */
+    public function getSettingsKey()
+    {
+        $this->assign['title'] = 'Pengaturan Modul API Key';
+        $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
+        return $this->draw('settings.key.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettingsKey()
+    {
+        foreach ($_POST['api'] as $key => $val) {
+            $this->settings('api', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan telah disimpan');
+        redirect(url([ADMIN, 'api', 'settingskey']));
+    }
+    /* End Settings Farmasi Section */
+
     public function postKirimWA()
     {
-        $data = [
-            'api_key' => $_POST['api_key'],
-            'sender'  => $_POST['sender'],
-            'number'  => $_POST['number'],
-            'message' => $_POST['message']
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => "https://banoewa.com/send-message",
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => "",
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => "POST",
-          CURLOPT_POSTFIELDS => json_encode($data),
-          CURLOPT_HTTPHEADER => array(
-             'Content-Type: application/json'
-           ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
+        $url = $waapiserver."/wagateway/kirimpesan";
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=text&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+        curl_setopt($curlHandle, CURLOPT_POST, 1);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($curlHandle);
+        curl_close($curlHandle);
         echo $response;
         exit();
     }
 
     public function postKirimWAMedia()
     {
-        $data = [
-            'api_key' => $_POST['api_key'],
-            'sender'  => $_POST['sender'],
-            'number'  => $_POST['number'],
-            'message' => $_POST['message'],
-            'filetype' => $_POST['tipe'],
-            'url' => $_POST['file']
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => "https://banoewa.com/send-media",
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => "",
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => "POST",
-          CURLOPT_POSTFIELDS => json_encode($data),
-          CURLOPT_HTTPHEADER => array(
-             'Content-Type: application/json'
-           ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
+        $url = $waapiserver."/wagateway/kirimgambar";
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=image&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+        curl_setopt($curlHandle, CURLOPT_POST, 1);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($curlHandle);
+        curl_close($curlHandle);
         echo $response;
         exit();
     }
 
     public function postKirimWADocument()
     {
-        $data = [
-            'api_key' => $_POST['api_key'],
-            'sender'  => $_POST['sender'],
-            'number'  => $_POST['number'],
-            'message' => $_POST['message'],
-            'filetype' => $_POST['tipe'],
-            'url' => $_POST['file']
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => "https://banoewa.com/send-document",
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => "",
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => "POST",
-          CURLOPT_POSTFIELDS => json_encode($data),
-          CURLOPT_HTTPHEADER => array(
-             'Content-Type: application/json'
-           ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
+        $url = $waapiserver."/wagateway/kirimfile";
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=document&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+        curl_setopt($curlHandle, CURLOPT_POST, 1);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($curlHandle);
+        curl_close($curlHandle);
         echo $response;
         exit();
     }

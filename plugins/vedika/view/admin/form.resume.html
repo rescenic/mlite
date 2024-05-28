@@ -13,13 +13,21 @@
       <div class="col-md-12">
         <div class="form-group">
             <label>Diagnosa</label>
+<<<<<<< HEAD
             <textarea name="diagnosa_resume" id="diagnosa_resume" class="form-control" cols="3"></textarea> 
+=======
+            <textarea name="diagnosa_resume" id="diagnosa_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.diagnosa_utama)?}{else}{?=isset_or($diagnosa.nm_penyakit)?}{/if}</textarea>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         </div>
       </div>
       <div class="col-md-12">
         <div class="form-group">
             <label>Prosedur</label>
+<<<<<<< HEAD
             <textarea name="prosedur_resume" id="prosedur_resume" class="form-control" cols="3"></textarea> 
+=======
+            <textarea name="prosedur_resume" id="prosedur_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.prosedur_utama)?}{else}{?=isset_or($prosedur.deskripsi_panjang)?}{/if}</textarea>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         </div>
       </div>
       <div class="col-md-12">
@@ -46,16 +54,28 @@
         </tr>
       </thead>
       <tbody>
+<<<<<<< HEAD
+=======
+        {if: $resume_pasien}
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         <tr>
           <td>{$resume_pasien.no_rawat}</td>
           <td>{$resume_pasien.diagnosa_utama}</td>
           <td>{$resume_pasien.prosedur_utama}</td>
           <td>{if: $resume_pasien.no_rawat !=''}<a href="" class="btn btn-xs btn-danger fa fa-edit edit_resume" data-no_rawat="{$resume_pasien.no_rawat}" data-diagnosa_utama="{$resume_pasien.diagnosa_utama}" data-prosedur_utama="{$resume_pasien.prosedur_utama}"></a>{/if}</td>
         </tr>
+<<<<<<< HEAD
       </tbody>
     </table>
   </div>
   
+=======
+        {/if}
+      </tbody>
+    </table>
+  </div>
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
@@ -74,7 +94,11 @@
     var prosedur_utama = $('textarea[name=prosedur_resume]').val();
 	var kondisi_pulang = $('select[name=kondisi_pulang]').val();
     //alert(no_rawat + ' - ' + diagnosa_utama + ' - ' + prosedur_utama + ' - ' + kondisi_pulang);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     var url = baseURL + '/vedika/saveresume?t=' + mlite.token;
 
     $.post(url,{
@@ -93,7 +117,11 @@
       //"</div>").show();
     });
   });
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   $("#display_resume_pasien").on("click",".edit_resume", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -102,7 +130,11 @@
 
     $('textarea[name=diagnosa_resume]').val(diagnosa_utama);
     $('textarea[name=prosedur_resume]').val(prosedur_utama);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   });
 
 </script>

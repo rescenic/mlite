@@ -6,128 +6,97 @@
         <th width="20px;">No.</th>
         <th>Nama Pemeriksaan</th>
         <th>Harga</th>
-        <th>Aksi</th>
       </tr>
     </thead>
     <tbody>
       {loop: $periksa_radiologi}
       <tr>
         <td>{$value.nomor}</td>
-        <td>{$value.nm_perawatan}</td>
-        <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
         <td colspan="2">
-          <button type="button" class="btn btn-primary btn-xs hasil_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-close"></i><span class="hidden-xs"> Hasil</span></button>
-          <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+          Dokter perujuk: {$value.nm_dokter}<br>
+          Petugas: {$value.nama}<br>
+          Cara bayar: {$value.png_jawab}<br>
+          Tanggal: {$value.tgl_periksa} - {$value.jam}<br>
+          <button type="button" class="btn btn-primary btn-xs hasil_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-status="{$value.status_periksa}"><i class="fa fa-edit"></i><span class="hidden-xs"> Hasil</span></button>
+          <button type="button" name="button" class="btn btn-primary btn-xs cetak_hasil" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-status="{$value.status_periksa}"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></button>
+          <a href="{?=url([ADMIN,'orthanc','bridgingorthanc',convertNorawat($value.no_rawat), strtolower($value.status_periksa)])?}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#orthancModal"><i class="fa fa-edit"></i><span class="hidden-xs"> PACS</span></a>
+          <button type="button" class="btn btn-danger btn-xs {if: $_SESSION['mlite_user'] !='1'}disabled{else}hapus_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-status="{$value.status_periksa}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
         </td>
       </tr>
+      {if: $value.periksa_radiologi}
+        {loop: $value.periksa_radiologi as $data0}
+        <tr>
+          <td></td>
+          <td>{$data0.nm_perawatan}</td>
+          <td>
+            Rp. <span class="pull-right">{?= number_format($data0.biaya,2,',','.')?}</span>
+          </td>
+        </tr>
+        {/loop}
+      {/if}
+      {if: $value.hasil_radiologi}
+        {loop: $value.hasil_radiologi as $data1}
+        <tr>
+          <td></td>
+          <td>{$data1.hasil}</td>
+          <td colspan="2">
+            <button type="button" class="btn btn-danger btn-xs {if: $_SESSION['mlite_user'] !='1'}disabled{else}hapus_hasil_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+          </td>
+        </tr>
+        {/loop}
+        {loop: $value.gambar_radiologi as $data2}
+        <tr>
+          <td></td>
+          <td colspan="2"><img src="{?=WEBAPPS_URL.'/radiologi/'.$data2.lokasi_gambar?}" height="400px"></td>
+        </tr>
+        {/loop}
+      {/if}
       {/loop}
     </tbody>
     <tfoot>
       <tr>
         <th colspan="2">Total Biaya Radiologi</th>
         <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_radiologi,2,',','.')?}</span></th>
-        <th></th>
       </tr>
     </tfoot>
   </table>
 </div>
-<script type="text/javascript">
-  $("#rincian").on("click",".hasil_radiologi", function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/radiologi/savehasil?t=' + mlite.token;
-    var no_rawat = $(this).attr("data-no_rawat");
-    var tgl_periksa = $(this).attr("data-tgl_periksa");
-    var jam_periksa = $(this).attr("data-jam_periksa");
-
-    var set_stok = ''
-        + '<div class="form-group">'
-        + '<div class="form-group">'
-        + '<label>Hasil</label>'
-        + '<textarea name="hasil" id="hasil" rows="4" class="form-control""></textarea>'
-        + '</div>'
-        + '<div class="form-group">'
-        + '<label>Upload</label>'
-        + '<form method="post" action="" enctype="multipart/form-data">'
-        + '  Select file : <input type="file" name="file" id="file" class="form-control"><br>'
-        + '  <input type="button" class="btn btn-info" value="Upload" id="btn_upload">'
-        + '</form>'
-        + '<div id="preview"></div>'
-        + '</div>'
-        + '';
-
-    // tampilkan dialog konfirmasi
-    var box = bootbox.dialog({
-      message: set_stok,
-      title: 'Input Hasil Radiologi',
-      buttons: {
-        main: {
-          label: 'Simpan',
-          className: 'btn-primary',
-          callback() {
-            var hasil = $('#hasil').val();
-            //console.log(tgl_keluar);
-            $.post(url, {
-              no_rawat: no_rawat,
-              tgl_periksa: tgl_periksa,
-              jam_periksa: jam_periksa,
-              hasil: hasil
-            } ,function(data) {
-              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-              //$("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
-              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-              "Hasil radiologi telah disimpan!"+
-              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-              "</div>").show();
-            });
-          }
-        },
-        cancel: {
-          label: "Cancel",
-          className: "btn-default"
-        }
-      }
-    });
-    box.on("shown.bs.modal", function() {
-      $('#btn_upload').click(function(){
-
-        var baseURL = mlite.url + '/' + mlite.admin;
-        event.preventDefault();
-        var url= baseURL + '/radiologi/uploadhasil?t=' + mlite.token;
-
-        var fd = new FormData();
-        var files = $('#file')[0].files[0];
-        fd.append('file',files);
-        fd.append('no_rawat',no_rawat);
-        fd.append('tgl_periksa',tgl_periksa);
-        fd.append('jam_periksa',jam_periksa);
-        // AJAX request
-        $.ajax({
-          url: url,
-          type: 'post',
-          data: fd,
-          contentType: false,
-          processData: false,
-          dataType: 'json',
-          success: function(data)
-          {
-              if(data.status == 'success')
-              {
-                  $('#preview').append("<img src='"+data.result+"' width='100' height='100' style='display: inline-block;'>");
-              }
-              else if(data.status == 'failure')
-              {
-                  bootbox.alert(data.result);
-              }
-          }
-        });
-      });
-    });
-
-    box.modal('show');
-    //$('select').selectator();
-    event.stopPropagation();
-    return false;
-  });
-  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
-</script>
+<br>
+<h4>e-Radiologi</h4>
+<div class="table-responsive no-margin">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th>Nama Dokter</th>
+        <th>Nomor Order</th>
+        <th>Tanggal Order</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $radiologi}
+      <tr>
+        <td>{$value.nm_dokter}</td>
+        <td>{$value.noorder}</td>
+        <td>{$value.tgl_permintaan} {$value.jam_permintaan}</td>
+        <td>
+          <!--<button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>-->
+          <button type="button" name="button" class="btn btn-xs btn-warning cetak_permintaan"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></button>
+          <!-- <button type="button" name="button" class="btn btn-xs btn-info nota_rad"><i class="fa fa-money"></i><span class="hidden-xs"> Nota</span></button> -->
+          <button type="button" class="btn btn-success btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}validasi_permintaan_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-check"></i><span class="hidden-xs"> Validasi</span></button>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="3">Nama Pemeriksaan</th>
+        <th>Status Bayar</th>
+      </tr>
+        {loop: $value.permintaan_pemeriksaan_radiologi as $data}
+        <tr>
+          <td colspan="3">{$data.nm_perawatan}</td>
+          <td>{$data.stts_bayar}</td>
+        </tr>
+        {/loop}
+      {/loop}
+    </tbody>
+  </table>
+</div>

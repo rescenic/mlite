@@ -103,7 +103,12 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+<<<<<<< HEAD
           $row['con_no_rawat'] = convertNorawat($row['no_rawat']);
+=======
+          $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
+          $row['no_sep'] = isset_or($bridging_sep['no_sep']);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           $this->assign['list'][] = $row;
         }
 
@@ -153,13 +158,25 @@ class Admin extends AdminModule
 
       $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
       $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
-      $this->assign['penjab'] = $this->db('penjab')->toArray();
+      $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
       $this->assign['no_rawat'] = '';
       $this->assign['no_reg']     = '';
       $this->assign['tgl_registrasi']= date('Y-m-d');
       $this->assign['jam_reg']= date('H:i:s');
       if (isset($_POST['no_rawat'])){
         $this->assign['reg_periksa'] = $this->db('reg_periksa')
+          ->select('pasien.no_rkm_medis')
+          ->select('pasien.nm_pasien')
+          ->select('pasien.tgl_lahir')
+          ->select('pasien.jk')
+          ->select('pasien.no_tlp')
+          ->select('reg_periksa.tgl_registrasi')
+          ->select('reg_periksa.jam_reg')
+          ->select('reg_periksa.no_rawat')
+          ->select('reg_periksa.no_reg')
+          ->select('poliklinik.kd_poli')
+          ->select('dokter.kd_dokter')
+          ->select('penjab.kd_pj')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
           ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
           ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
@@ -219,7 +236,7 @@ class Admin extends AdminModule
             $bg_status = 'text-danger';
           } else {
             $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
-            if($result >= 1) {
+            if(!empty($result['no_rawat'])) {
               $stts_daftar = 'Lama';
               $bg_status = 'text-info';
             } else {
@@ -378,7 +395,7 @@ class Admin extends AdminModule
             'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
             'kso' => $jns_perawatan['kso'],
             'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
+            'biaya_rawat' => $jns_perawatan['total_byrpr'],
             'stts_bayar' => 'Belum'
           ]);
         }
@@ -396,33 +413,46 @@ class Admin extends AdminModule
             'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
             'kso' => $jns_perawatan['kso'],
             'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
+            'biaya_rawat' => $jns_perawatan['total_byrdrpr'],
             'stts_bayar' => 'Belum'
           ]);
         }
       }
       if($_POST['kat'] == 'obat') {
 
-        $cek_resep = $this->db('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
-        if(!$cek_resep) {
-          $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
-          if(empty($max_id['no_resep'])) {
-            $max_id['no_resep'] = '0000';
-          }
-          $_next_no_resep = sprintf('%04s', ($max_id['no_resep'] + 1));
-          $no_resep = date('Ymd').''.$_next_no_resep;
+        $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
+        $cek_resep = $this->db('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ralan')->oneArray();
+
+        if(empty($cek_resep)) {
 
           $resep_obat = $this->db('resep_obat')
             ->save([
               'no_resep' => $no_resep,
-              'tgl_perawatan' => $_POST['tgl_perawatan'],
-              'jam' => $_POST['jam_rawat'],
+              'tgl_perawatan' => '0000-00-00',
+              'jam' => '00:00:00',
               'no_rawat' => $_POST['no_rawat'],
               'kd_dokter' => $_POST['kode_provider'],
               'tgl_peresepan' => $_POST['tgl_perawatan'],
               'jam_peresepan' => $_POST['jam_rawat'],
-              'status' => 'ralan'
+              'status' => 'ralan',
+              'tgl_penyerahan' => '0000-00-00',
+              'jam_penyerahan' => '00:00:00'
             ]);
+
+          if ($this->db('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $_POST['kode_provider'])->oneArray()) {
+            $this->db('resep_dokter')
+              ->save([
+                'no_resep' => $no_resep,
+                'kode_brng' => $_POST['kd_jenis_prw'],
+                'jml' => $_POST['jml'],
+                'aturan_pakai' => $_POST['aturan_pakai']
+              ]);
+          }
+
+        } else {
+
+          $no_resep = $cek_resep['no_resep'];
+
           $this->db('resep_dokter')
             ->save([
               'no_resep' => $no_resep,
@@ -431,15 +461,6 @@ class Admin extends AdminModule
               'aturan_pakai' => $_POST['aturan_pakai']
             ]);
 
-        } else {
-          $no_resep = $cek_resep['no_resep'];
-          $this->db('resep_dokter')
-            ->save([
-              'no_resep' => $no_resep,
-              'kode_brng' => $_POST['kd_jenis_prw'],
-              'jml' => $_POST['jml'],
-              'aturan_pakai' => $_POST['aturan_pakai']
-            ]);
         }
 
       }
@@ -604,10 +625,19 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
+<<<<<<< HEAD
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
         $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+=======
+      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+
+      if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->where('nip', $_POST['nip'])->oneArray()) {
+        $this->db('pemeriksaan_ralan')->save($_POST);
+      } else {
+        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->where('nip', $_POST['nip'])->save($_POST);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       }
       exit();
     }
@@ -672,23 +702,53 @@ class Admin extends AdminModule
     public function postSaveBerkasDigital()
     {
 
-      $dir    = $this->_uploads;
-      $cntr   = 0;
+      if(MULTI_APP) {
 
-      $image = $_FILES['file']['tmp_name'];
-      $img = new \Systems\Lib\Image();
-      $id = convertNorawat($_POST['no_rawat']);
-      if ($img->load($image)) {
-          $imgName = time().$cntr++;
-          $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
-          $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
-          $img->save($imgPath);
-          $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
-          if($query) {
-            echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
-          }
+        $curl = curl_init();
+        $filePath = $_FILES['file']['tmp_name'];
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+          CURLOPT_HTTPHEADER => array(),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        $json = json_decode($response, true);
+        if($json['status'] == 'Success') {
+          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$json['msg'].'" width="150" />';
+        } else {
+          echo 'Gagal menambahkan gambar';
+        }
+
+      } else {
+
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $image = $_FILES['file']['tmp_name'];
+        $img = new \Systems\Lib\Image();
+        $id = convertNorawat($_POST['no_rawat']);
+        if ($img->load($image)) {
+            $imgName = time().$cntr++;
+            $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+            $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+            $img->save($imgPath);
+            $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+            if($query) {
+              echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+            }
+        }
       }
-
       exit();
 
     }
@@ -819,6 +879,12 @@ class Admin extends AdminModule
 
     }
 
+    public function postCekWaktu()
+    {
+      echo date('H:i:s');
+      exit();
+    }
+
     public function postMaxid()
     {
       $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
@@ -849,10 +915,124 @@ class Admin extends AdminModule
         return $text;
     }
 
+    public function getSepDetail($no_sep){
+      $sep = $this->db('bridging_sep')->where('no_sep', $no_sep)->oneArray();
+      $this->tpl->set('sep', $this->tpl->noParse_array(htmlspecialchars_array($sep)));
+
+      $potensi_prb = $this->db('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+      $data_sep['potensi_prb'] = $potensi_prb['prb'];
+      echo $this->draw('sep.detail.html', ['data_sep' => $data_sep]);
+      exit();
+    }
+
+    public function getSuratRujukan($no_rawat)
+    {
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat));
+        $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+        $pasien = $this->db('pasien')
+          ->join('kelurahan', 'kelurahan.kd_kel=pasien.kd_kel')
+          ->join('kecamatan', 'kecamatan.kd_kec=pasien.kd_kec')
+          ->join('kabupaten', 'kabupaten.kd_kab=pasien.kd_kab')
+          ->join('propinsi', 'propinsi.kd_prop=pasien.kd_prop')
+          ->where('no_rkm_medis', $no_rkm_medis)
+          ->oneArray();
+        $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+        $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+        $this->tpl->set('nm_dokter', $nm_dokter);
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
+        echo $this->tpl->draw(MODULES.'/igd/view/admin/surat.rujukan.html', true);
+        exit();
+    }
+
+    public function getSuratSehat($no_rawat)
+    {
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat));
+        $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+        $pasien = $this->db('pasien')
+          ->join('kelurahan', 'kelurahan.kd_kel=pasien.kd_kel')
+          ->join('kecamatan', 'kecamatan.kd_kec=pasien.kd_kec')
+          ->join('kabupaten', 'kabupaten.kd_kab=pasien.kd_kab')
+          ->join('propinsi', 'propinsi.kd_prop=pasien.kd_prop')
+          ->where('no_rkm_medis', $no_rkm_medis)
+          ->oneArray();
+        $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+        $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+        $this->tpl->set('nm_dokter', $nm_dokter);
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
+        echo $this->tpl->draw(MODULES.'/igd/view/admin/surat.sehat.html', true);
+        exit();
+    }
+
+    public function getSuratSakit($no_rawat)
+    {
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat));
+        $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+        $pasien = $this->db('pasien')
+          ->join('kelurahan', 'kelurahan.kd_kel=pasien.kd_kel')
+          ->join('kecamatan', 'kecamatan.kd_kec=pasien.kd_kec')
+          ->join('kabupaten', 'kabupaten.kd_kab=pasien.kd_kab')
+          ->join('propinsi', 'propinsi.kd_prop=pasien.kd_prop')
+          ->where('no_rkm_medis', $no_rkm_medis)
+          ->oneArray();
+        $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+        $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+        $this->tpl->set('nm_dokter', $nm_dokter);
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
+        echo $this->tpl->draw(MODULES.'/igd/view/admin/surat.sakit.html', true);
+        exit();
+    }
+
+    public function postCetak()
+    {
+      $this->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
+      $cari = $_POST['cari'];
+      $tgl_awal = $_POST['tgl_awal'];
+      $tgl_akhir = $_POST['tgl_akhir'];
+      $igd = $this->settings->get('settings.igd');
+      $this->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
+        `temp1`,`temp2`,`temp3`,`temp4`,`temp5`,`temp6`,`temp7`,`temp8`,`temp9`,`temp10`,`temp11`,`temp12`,`temp13`,`temp14`,`temp15`,`temp16`,`temp17`,`temp18`,`temp19`
+      )
+      SELECT *
+      FROM `reg_periksa`
+      WHERE `kd_poli` = '$igd'
+      AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
+      ");
+
+      $cetak = $this->db('mlite_temporary')->toArray();
+      echo $this->draw('cetak.igd.html', ['cetak' => $cetak]);
+
+      exit();
+    }
+
+    public function getCetakPdf()
+    {
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'L'
+      ]);
+  
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/cetak.igd.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+  
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/igd/js/admin/igd.js');
+        $cek_pegawai = $this->db('pegawai')->where('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']))->oneArray();
+        $cek_role = '';
+        if($cek_pegawai) {
+          $cek_role = $this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']));
+        }
+        echo $this->draw(MODULES.'/igd/js/admin/igd.js', ['cek_role' => $cek_role]);
         exit();
     }
 

@@ -255,6 +255,7 @@
                   id="btnKRMCS" value="Submit" name="btnKRMCS" onclick="printDiv('printAntrianCS');">ANTRIAN CS</button>
               </form>
             </div>
+<<<<<<< HEAD
             <div class="col-6 pt-3 pb-3">
               <div id="printAntrianIgd" style="display: none;" class="cetak">
                 <div
@@ -273,6 +274,13 @@
                   IGD</button>
               </form>
             </div>
+=======
+            <div id="display_nomor_cs"></div>
+            <form role="form" id="formcs" name="formcs">
+              <button type="submit" class="btn btn-lg btn-danger btn-block" style="padding: 30px;font-size:42px;" id="btnKRMCS" value="Submit" name="btnKRMCS" onclick="printDiv('printAntrianCS');">ANTRIAN CS</button>
+            </form>
+          </div>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           </div>
         </div>
         <div class="modal-footer">
@@ -595,6 +603,7 @@
         });
       });
     });
+<<<<<<< HEAD
     $(document).ready(function () {
       setInterval(function () {
         $("#display_nomor_loket").load("{?=url()?}/anjungan/ajax?show=tampilloket");
@@ -606,6 +615,18 @@
       }, 1000);
     })
     function printDiv(eleId) {
+=======
+  });
+  $(document).ready(function() {
+    setInterval(function(){
+      $("#display_nomor_loket").load("{?=url()?}/anjungan/ajax?show=tampilloket");
+      $("#print_nomor_loket").load("{?=url()?}/anjungan/ajax?show=printloket");
+      $("#display_nomor_cs").load("{?=url()?}/anjungan/ajax?show=tampilcs");
+      $("#print_nomor_cs").load("{?=url()?}/anjungan/ajax?show=printcs");
+    }, 1000);
+  })
+  function printDiv(eleId){
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       var PW = window.open('', '_blank', 'Print content');
       PW.document.write(document.getElementById(eleId).innerHTML);
       PW.document.close();
@@ -651,6 +672,7 @@
 
         setTimeout(function () { window.location.href = "{?=url('anjungan/pasien')?}"; }, 500000);
 
+<<<<<<< HEAD
       });
 
       $('input[name="datepicker"]').datepicker({
@@ -684,6 +706,133 @@
               }
             }
           });
+=======
+    $('#finish').click(function (e) {
+      var no_rkm_medis_daftar = $('#no_rkm_medis_daftar').val();
+      var nm_pasien_daftar = $('#nm_pasien_daftar').val();
+      var alamat_daftar = $('#alamat_daftar').val();
+      var tgl_registrasi_daftar = $('#tgl_registrasi_daftar').val();
+      var kd_poli_daftar = $('#pilih_poli_daftar').val();
+      var kd_dokter_daftar = $('#pilih_dokter_daftar').val();
+      var kd_pj = $('#kdpj').val();
+
+      $('#no_rkm_medis_cetak').text(no_rkm_medis_daftar);
+      $('#nm_pasien_cetak').text(nm_pasien_daftar);
+      $('#alamat_cetak').text(alamat_daftar);
+      $('#tgl_registrasi_cetak').text(tgl_registrasi_daftar);
+      $('#kd_poli_cetak').text(kd_poli_daftar);
+      $('#kd_dokter_cetak').text(kd_dokter_daftar);
+
+      $.ajax({
+          url:'{?=url()?}/anjungan/ajax?show=get-namapoli',
+          type:'POST',
+          dataType: "json",
+          data:{
+              kd_poli:kd_poli_daftar
+          },
+         success:function(data){
+           if(data.status == 'ok'){
+             $('#nm_poli_cetak').text(data.result.nm_poli);
+           } else {
+             alert('error');
+           }
+         }
+      });
+
+      $.ajax({
+          url:'{?=url()?}/anjungan/ajax?show=get-namadokter',
+          type:'POST',
+          dataType: "json",
+          data:{
+              kd_dokter:kd_dokter_daftar
+          },
+         success:function(data){
+           if(data.status == 'ok'){
+             $('#nm_dokter_cetak').text(data.result.nm_dokter);
+           } else {
+             alert('error');
+           }
+         }
+      });
+
+      $.ajax({
+          url:'{?=url()?}/anjungan/ajax?show=post-registrasi',
+          type:'POST',
+          dataType: "json",
+          data:{
+              no_rkm_medis:no_rkm_medis_daftar,
+              tgl_registrasi:tgl_registrasi_daftar,
+              kd_poli:kd_poli_daftar,
+              kd_dokter:kd_dokter_daftar,
+              kd_pj: kd_pj
+          },
+         success:function(data){
+           if(data.status == 'ok'){
+             $('#tgl_registrasi_final').text(data.result.tgl_registrasi);
+             $('#jam_reg_final').text(data.result.jam_reg);
+             $('#no_reg_final').text(data.result.no_reg);
+             $('#nm_pasien_final').text(data.result.nm_pasien);
+             $('#no_rkm_medis_final').text(data.result.no_rkm_medis);
+             $('#alamat_final').text(data.result.alamat);
+             $('#nm_dokter_final').text(data.result.nm_dokter);
+             $('#nm_poli_final').text(data.result.nm_poli);
+             $('#cara_bayar_final').text(data.result.png_jawab);
+           } else {
+             alert('error');
+           }
+         }
+      });
+      $('.progress-bar').css('width', '100%');
+      $('.progress-bar').html('Step 3 of 3');
+      $('#myTab a[href="#reviewPrint"]').tab('show');
+      setTimeout(function() { window.location.href = "{?=url('anjungan/pasien')?}"; }, 500000);
+    });
+
+  });
+
+  $(function () {
+
+    $('#infoPendaftaran').click(function (e) {
+      var no_rawat = $('#no_rawat').val();
+      $.ajax({
+        type:'POST',
+        url:'get-sep.php',
+        dataType: "json",
+        data: {no_rawat:no_rawat},
+        success:function(data){
+          if(data.status == 'ok'){
+            e.preventDefault();
+            var tgl_lahir = new Date(data.result.tanggal_lahir);
+            var dd = String(tgl_lahir.getDate()).padStart(2, '0');
+            var mm = String(tgl_lahir.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = tgl_lahir.getFullYear();
+            tanggal_lahir = dd + '/' + mm + '/' + yyyy;
+
+            $('.progress-bar').css('width', '70%');
+            $('.progress-bar').html('Step 2 of 3');
+            $('#myTab a[href="#reviewsep"]').tab('show');
+            $('#sep_no_sep').text(data.result.no_sep);
+            $('#sep_tglsep').text(data.result.tglsep);
+            $('#sep_no_kartu').text(data.result.no_kartu);
+            $('#sep_jkel').text(data.result.jkel);
+            $('#sep_nama_pasien').text(data.result.nama_pasien);
+            $('#sep_no_rawat').text(data.result.no_rawat);
+            $('#sep_tanggal_lahir').text(tanggal_lahir);
+            $('#sep_notelep').text(data.result.notelep);
+            $('#sep_peserta').text(data.result.peserta);
+            $('#sep_nmpolitujuan').text(data.result.nmpolitujuan);
+            $('#sep_cob').text(data.result.cob);
+            $('#sep_nmppkrujukan').text(data.result.nmppkrujukan);
+            $('#sep_jnspelayanan').text(data.result.jnspelayanan);
+            $('#sep_nmdiagnosaawal').text(data.result.nmdiagnosaawal);
+            $('#sep_klsrawat').text(data.result.klsrawat);
+            $('#sep_penjamin').text(data.result.penjamin);
+            $('#sep_catatan').text(data.result.catatan);
+          }else{
+            alert("Detail nomor perawatan tidak ditemukan...");
+            document.getElementById("no_rawat").value = "";
+          }
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         }
       });
 

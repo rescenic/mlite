@@ -502,9 +502,21 @@
           </div>
           <div class="panel-footer">
             <input type="submit" id="simpan" class="btn btn-primary" name="" value="Simpan">
+            <button type="button" name="button" class="btn btn-success" id="finger">Cek Finger</button>
             <!--<button type="button" name="button" class="btn btn-warning" id="sync_sep">Sync SEP</button>-->
+            <div class="btn-group">
+              <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Antrian <span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                <li><a href="#" class="add_antrian" data-jenis_kunjungan="1">Rujukan FKTP</a></li>
+                <li><a href="#" class="add_antrian" data-jenis_kunjungan="2">Rujukan Internal</a></li>
+                <li><a href="#" class="add_antrian" data-jenis_kunjungan="3">Kontrol</a></li>
+                <li><a href="#" class="add_antrian" data-jenis_kunjungan="4">Rujukan Antar RS</a></li>
+              </ul>
+            </div>
             <button type="button" name="button" class="btn btn-warning" id="kontrol">Kontrol</button>
             <button type="button" name="button" class="btn btn-warning" id="spri">SPRI</button>
+            <button type="button" name="button" class="btn btn-warning" id="rujukkeluar">Rujuk Keluar</button>
+            <button type="button" name="button" class="btn btn-warning" id="prb">PRB</button>
             <input type="submit" id="selesai" class="btn btn-danger pull-right" name="" value="Selesai">
           </div>
         </div>
@@ -526,12 +538,33 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="add_antrianModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="kontrolModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             ...
         </div>
     </div>
+</div>
+<div class="modal fade" id="rujukkeluarModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          ...
+      </div>
+  </div>
+</div>
+<div class="modal fade" id="prbModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          ...
+      </div>
+  </div>
 </div>
 <script type="text/javascript">
   $("#form_sep").on("click","#sync_sep", function(event){
@@ -544,6 +577,29 @@
 
     var modal = $('#syncsepModal');
     var modalContent = $('#syncsepModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click",".add_antrian", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+    var nomor_rujukan = $('input:text[name=sep_nomor_rujukan]').val();
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    var jenis_kunjungan = $(this).attr("data-jenis_kunjungan");
+
+    var loadURL =  baseURL + '/vclaim/addantrian/' + no_rkm_medis + '/' + no_rawat + '/' + nomor_rujukan + '/' + jenis_kunjungan + '?t=' + mlite.token;
+    // alert(loadURL);
+
+    var modal = $('#add_antrianModal');
+    var modalContent = $('#add_antrianModal .modal-content');
 
     modal.off('show.bs.modal');
     modal.on('show.bs.modal', function () {
@@ -589,6 +645,41 @@
   });
 </script>
 <script type="text/javascript">
+  $("#form_sep").on("click","#rujukkeluar", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_peserta = $('input:text[name=sep_no_kartu]').val();
+    var loadURL =  baseURL + '/vclaim/rujukkeluar/' + no_peserta + '?t=' + mlite.token;
+
+    var modal = $('#rujukkeluarModal');
+    var modalContent = $('#rujukkeluarModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+
+  $("#form_sep").on("click","#prb", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_peserta = $('input:text[name=sep_no_kartu]').val();
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    var loadURL =  baseURL + '/vclaim/srb/' + no_peserta + '/'+no_rawat+'?t=' + mlite.token;
+
+    var modal = $('#prbModal');
+    var modalContent = $('#prbModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
    $(function () {
        $('.tanggal').datetimepicker({
          format: 'YYYY-MM-DD',
@@ -613,7 +704,35 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_sep = $(this).attr("data-no_sep");
-    window.open(baseURL + '/vclaim/cetaksep/' + no_sep + '?t=' + mlite.token);
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    window.open(baseURL + '/vclaim/cetaksep/' + no_sep + '/' + no_rawat + '?t=' + mlite.token);
+  });
+  $("#form_sep").on("click",".print_sep_internal", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_sep = $(this).attr("data-no_sep");
+    window.open(baseURL + '/vclaim/cetaksepinternal/' + no_sep + '?t=' + mlite.token);
+  });
+  $("#form_sep").on("click","#finger", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_kartu = $('#sep_no_kartu').val();
+    var url = baseURL + '/vclaim/finger/' + no_kartu + '?t=' + mlite.token
+    $.get(url,function (data) {
+      var data = JSON.parse(data);
+      alert(data.response.status)
+    })
+  });
+  $("#form_sep").on("click","#approvefinger", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_kartu = $('#sep_no_kartu').val();
+    var url = baseURL + '/vclaim/approvefinger/' + no_kartu + '?t=' + mlite.token
+    $.get(url,function (data) {
+      // var data = JSON.parse(data);
+      alert(data)
+    })
   });
 </script>
 <script type="text/javascript">
@@ -623,9 +742,12 @@
     event.preventDefault();
     var url = baseURL + '/vclaim/hapussep?t=' + mlite.token;
     var no_sep = $(this).attr("data-no_sep");
+    //console.log(no_sep);
+
     $.post(url, {
       no_sep: no_sep
     } ,function(data) {
+      alert(data);
       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data rincian SEP telah dihapus!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -645,7 +767,11 @@
 
     $('input:text[name=get_no_sep]').val(no_sep);
     $('input:text[name=sep_nomor_rujukan]').val(no_rujukan);
-    $('input:text[name=sep_spesialis_nama]').val(poli);
+    if(poli == 'null') {
+      $('input:text[name=sep_spesialis_nama]').val('');
+    } else {
+      $('input:text[name=sep_spesialis_nama]').val(poli);
+    }
     $('input:text[name=sep_diagnosa_nama]').val(diagnosa);
     $('input:text[name=sep_tanggal_sep]').val(tgl_sep);
 
@@ -1069,20 +1195,22 @@
             var output="<div class=\"panel panel-default m-t-xl\">";
             for (var i in histori) {
                 var jnsPelayanan = "Rawat Inap";
+                var poli = "null";
                 if(histori[i].jnsPelayanan == 2) {
                   var jnsPelayanan = "Rawat Jalan";
+                  var poli = histori[i].poli;
                 }
                 output+="<div class=\"panel-body\">";
                 output+="Diagnosa : " + histori[i].diagnosa + "<br/>";
                 output+="Jenis : " + jnsPelayanan + "<br/>";
                 output+="Kelas : " + histori[i].kelasRawat + "<br/>";
-                output+="Poli : " + histori[i].poli + "<br/>";
+                output+="Poli : " + poli + "<br/>";
                 output+="Tgl. SEP : " + histori[i].tglSep + "<br/>";
                 output+="No. SEP : " + histori[i].noSep + "<br/>";
                 output+="No. Rjk : " + histori[i].noRujukan + "<br/>";
                 output+="PPK Pelayanan : " + histori[i].ppkPelayanan;
                 output+="</div>";
-                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + histori[i].poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button></div>";
+                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button></div>";
             }
             output+="</div>";
             $("#histori_pelayanan").html(output).show();
@@ -1372,7 +1500,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/faskes/' + encodeURIComponent(query) + '/' + encodeURIComponent(sep_asal_faskes_kode) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/faskes/' + encodeURIComponent(query) + '/' + encodeURIComponent(sep_asal_faskes_kode) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1409,7 +1537,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/poli/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/poli/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1444,12 +1572,15 @@
   $('#sep_spesialis_kode').keyup(function(){
        var query = $(this).val();
        var sep_pelayanan_kode = $('input:text[name=sep_pelayanan_kode]').val();
+       if($('#sep_spesialis_kode').val() == 'IGD') {
+         var sep_pelayanan_kode = '1';
+       }
        var sep_tanggal_sep = $('input:text[name=sep_tanggal_sep]').val();
 
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1492,7 +1623,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1529,7 +1660,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/diagnosa/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/diagnosa/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1572,7 +1703,7 @@
                      data:{query:query},
                      success:function(data)
                      {
-                          console.log(data);
+                          //console.log(data);
                           $('#provinsiList').fadeIn();
                           $('#provinsiList').html(data);
                      }
@@ -1584,7 +1715,7 @@
            $('#id_provinsi').val($(this).text().split(': ')[0]);
            var id_provinsi = $('#id_provinsi').val();
            $('#provinsiList').fadeOut();
-           console.log(id_provinsi);
+           //console.log(id_provinsi);
 
            $('#kabupaten').keyup(function(){
                 var query = $(this).val();
@@ -1609,7 +1740,7 @@
            $('#id_kabupaten').val($(this).text().split(': ')[0]);
            var id_kabupaten = $('#id_kabupaten').val();
            $('#kabupatenList').fadeOut();
-           console.log(id_kabupaten);
+           //console.log(id_kabupaten);
 
            $('#kecamatan').keyup(function(){
                 var query = $(this).val();
@@ -1635,7 +1766,7 @@
            $('#id_kecamatan').val($(this).text().split(': ')[0]);
            var id_kecamatan = $('#id_kecamatan').val();
            $('#kecamatanList').fadeOut();
-           console.log(id_kecamatan);
+           //console.log(id_kecamatan);
 
            $('#kelurahan').keyup(function(){
                 var query = $(this).val();
@@ -1660,7 +1791,7 @@
            $('#kelurahan').val($(this).text().split(': ')[1]);
            $('#id_kelurahan').val($(this).text().split(': ')[0]);
            $('#kelurahanList').fadeOut();
-           console.log(id_kelurahan);
+           //console.log(id_kelurahan);
 
       });
 

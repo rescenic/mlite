@@ -18,16 +18,30 @@ class Admin extends Main
 
     public function drawTheme($file)
     {
-        $username = $this->getUserInfo('fullname', null, true);
-        $access = $this->getUserInfo('access');
+
+        $username = '';
+        $access = '';
+        $this->assign['username'] = '';
+
+        if(isset_or($_SESSION['mlite_user']) == '') {
+          $id = 1;
+        } else {
+          $id = $_SESSION['mlite_user'];
+        }
+
+        if($this->db('mlite_users')->where('id', $id)->oneArray()) {
+          $username = $this->getUserInfo('fullname', $id, true);
+          $access = $this->getUserInfo('access');
+          $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
+        }
 
         $this->assign['tanggal']       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
         $this->assign['notify']        = $this->getNotify();
-        $this->assign['powered']       = 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>';
+        $this->assign['powered']       = 'Powered by <a href="https://mlite.id/">mLITE</a>';
         $this->assign['path']          = url();
         $this->assign['nama_instansi'] = $this->settings->get('settings.nama_instansi');
         $this->assign['logo'] = $this->settings->get('settings.logo');
+        $this->assign['wallpaper'] = $this->settings->get('settings.wallpaper');
         $this->assign['theme_admin'] = $this->settings->get('settings.theme_admin');
         $this->assign['version']       = $this->settings->get('settings.version');
         $this->assign['update_access'] = ($access == 'all') || in_array('settings', explode(',', $access)) ? true : false;
@@ -48,6 +62,11 @@ class Admin extends Main
         $this->assign['dokter_ralan_access'] = ($access == 'all') || in_array('dokter_ralan', explode(',', $access)) ? true : false;
         $this->assign['dokter_ranap_access'] = ($access == 'all') || in_array('dokter_ranap', explode(',', $access)) ? true : false;
         $this->assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
+
+        $this->assign['poliklinik'] = '';
+        if($this->assign['cek_anjungan']) {
+          $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
+        }
 
         $this->assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
 
@@ -70,7 +89,7 @@ class Admin extends Main
                     $details['content'] = call_user_func_array([$this->module->{$name}, $anyMethod], array_values($params));
                 } else {
                     http_response_code(404);
-                    $this->setNotify('failure', "[@{$method}] Alamat yang anda diminta tidak ada.");
+                    $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
                     $details['content'] = null;
                 }
 
@@ -90,7 +109,13 @@ class Admin extends Main
         $nav = [];
         $modules = $this->module->getArray();
 
-        if ($this->getUserInfo('access') != 'all') {
+        if($_SESSION['mlite_user'] == '') {
+          $id = 1;
+        } else {
+          $id = $_SESSION['mlite_user'];
+        }
+
+        if ($this->getUserInfo('access', $id, $refresh = false) != 'all') {
             $modules = array_intersect_key($modules, array_fill_keys(explode(',', $this->getUserInfo('access')), null));
         }
 
@@ -173,7 +198,7 @@ class Admin extends Main
             return call_user_func_array([$this->module->{$name}, $method], array_values($params));
         }
 
-        $this->setNotify('failure', "[@{$method}] Alamat yang anda diminta tidak ada.");
+        $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
         return false;
     }
 
@@ -183,19 +208,23 @@ class Admin extends Main
         $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
         // Create attempt if does not exist
-        if (!$attempt) {
+        if($this->settings->get('settings.keamanan') == 'ya') {
+            if (!$attempt) {
             $this->db('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
             $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
-        } else {
-            $attempt['attempts'] = intval($attempt['attempts']);
-            $attempt['expires'] = intval($attempt['expires']);
+            } else {
+                $attempt['attempts'] = intval($attempt['attempts']);
+                $attempt['expires'] = intval($attempt['expires']);
+            }
         }
 
         // Is IP blocked?
-        /*if ((time() - $attempt['expires']) < 0) {
-            $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
-            return false;
-        }*/
+        if($this->settings->get('settings.keamanan') == 'ya') {
+          if ((time() - $attempt['expires']) < 0) {
+              $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+              return false;
+          }
+        }
 
         $row = $this->db('mlite_users')->where('username', $username)->oneArray();
 
@@ -217,16 +246,20 @@ class Admin extends Main
             }
             return true;
         } else {
-            // Increase attempt
-            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
-            $attempt['attempts'] += 1;
+            if($this->settings->get('settings.keamanan') == 'ya') {
+                // Increase attempt
+                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
+                $attempt['attempts'] += 1;
 
-            // ... and block if reached maximum attempts
-            if ($attempt['attempts'] % 3 == 0) {
-                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
-                $attempt['expires'] = strtotime("+10 minutes");
+                // ... and block if reached maximum attempts
+                if ($attempt['attempts'] % 3 == 0) {
+                    $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                    $attempt['expires'] = strtotime("+10 minutes");
 
-                $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+                    $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+                } else {
+                    $this->setNotify('failure', 'Username atau password salah!');
+                }
             } else {
                 $this->setNotify('failure', 'Username atau password salah!');
             }
@@ -254,6 +287,32 @@ class Admin extends Main
     private function registerPage($name, $path)
     {
         $this->registerPage[] = ['id' => null, 'title' => $name, 'slug' => $path];
+    }
+
+    private function _getPoliklinik($kd_poli = null)
+    {
+        $result = [];
+        $rows = $this->db('poliklinik')->toArray();
+
+        if (!$kd_poli) {
+            $kd_poliArray = [];
+        } else {
+            $kd_poliArray = explode(',', $kd_poli);
+        }
+
+        foreach ($rows as $row) {
+            if (empty($kd_poliArray)) {
+                $attr = '';
+            } else {
+                if (in_array($row['kd_poli'], $kd_poliArray)) {
+                    $attr = 'selected';
+                } else {
+                    $attr = '';
+                }
+            }
+            $result[] = ['kd_poli' => $row['kd_poli'], 'nm_poli' => $row['nm_poli'], 'attr' => $attr];
+        }
+        return $result;
     }
 
     public function getRegisteredPages()

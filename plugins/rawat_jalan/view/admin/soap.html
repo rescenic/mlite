@@ -26,8 +26,9 @@
         <th>Tinggi(cm)</th>
         <th>Berat(Kg)</th>
         <th>GCS(E,V,M)</th>
+        <th>SPO2</th>
         <th>Alergi</th>
-        <th>Instruksi</th>
+        <th>Instruksi & Evaluasi</th>
         {else}
         <th colspan="3">SOAP</th>
         {/if}
@@ -37,8 +38,13 @@
       {loop: $pemeriksaan}
       <tr>
         {if: $admin_mode == 'complex'}
+<<<<<<< HEAD
         <td rowspan="6" style="vertical-align:top;">{$value.nomor}</td>
         <td rowspan="5" style="vertical-align:top;white-space: nowrap;">
+=======
+        <td rowspan="7" style="vertical-align:top;">{$value.nomor}</td>
+        <td rowspan="6" style="vertical-align:top;white-space: nowrap;">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           <b>Rawat Jalan</b><br>
           {$value.tgl_perawatan} {$value.jam_rawat}<br>
           {$value.departemen_petugas}
@@ -50,9 +56,16 @@
         <td>{$value.tinggi}</td>
         <td>{$value.berat}</td>
         <td>{$value.gcs}</td>
+        <td>{$value.spo2}</td>
         <td>{$value.alergi}</td>
+<<<<<<< HEAD
         <td rowspan="6" style="vertical-align:top;">
           {?=nl2br($value.instruksi)?}<br><br>
+=======
+        <td rowspan="7" style="vertical-align:top;">
+          Instruksi: {$value.instruksi}<br><br>
+          Evaluasi: {$value.evaluasi}<br><br>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           <div class="qrcodePetugas{$value.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
           {$value.nama_petugas}
           <script>
@@ -73,19 +86,18 @@
         {/if}
       </tr>
       {if: $admin_mode == 'complex'}
-      <!--
       <tr>
         <th colspan="2">Kesadaran</th>
-        <td colspan="6">{$value.kesadaran}</td>
+        <td colspan="7">{$value.kesadaran}</td>
       </tr>
-	  -->
       <tr>
-        <th colspan="2">Imunisasi</th>
-        <td colspan="6">{$value.imun_ke}</td>
+        <th colspan="2">Lingkar Perut</th>
+        <td colspan="7">{$value.lingkar_perut}</td>
       </tr>
       {/if}
       <tr>
         <th colspan="2">Subyektif</th>
+<<<<<<< HEAD
         <td colspan="6" style="vertical-align:top">{?=nl2br($value.keluhan)?}</td>
       </tr>
       <tr>
@@ -98,9 +110,22 @@
         <td colspan="6" style="vertical-align:top">{?=nl2br($value.penilaian)?}</td>
       </tr>
 	  
+=======
+        <td colspan="7">{$value.keluhan}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Obyektif</th>
+        <td colspan="7">{$value.pemeriksaan}</td>
+      </tr>
+      <tr>
+        <th colspan="2">Assesment</th>
+        <td colspan="7">{$value.penilaian}</td>
+      </tr>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       <tr>
         <td>
           <div class="">
+            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $value.nip}
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$value.no_rawat}"
               data-tgl_perawatan="{$value.tgl_perawatan}"
@@ -112,23 +137,31 @@
               data-tinggi="{$value.tinggi}"
               data-berat="{$value.berat}"
               data-gcs="{$value.gcs}"
+              data-kesadaran="{$value.kesadaran}"
               data-alergi="{$value.alergi}"
-              data-imun_ke="{$value.imun_ke}"
+              data-lingkar_perut="{$value.lingkar_perut}"
               data-keluhan="{$value.keluhan}"
               data-pemeriksaan="{$value.pemeriksaan}"
               data-penilaian="{$value.penilaian}"
               data-rtl="{$value.rtl}"
               data-instruksi="{$value.instruksi}"
+              data-evaluasi="{$value.evaluasi}"
+              data-spo2="{$value.spo2}"
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
               data-no_rawat="{$value.no_rawat}"
               data-tgl_perawatan="{$value.tgl_perawatan}"
               data-jam_rawat="{$value.jam_rawat}"
               ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
+              {/if}
           </div>
         </td>
         <th colspan="2">Plan</th>
+<<<<<<< HEAD
         <td colspan="6" style="vertical-align:top">{?=nl2br($value.rtl)?}</td>
+=======
+        <td colspan="7">{$value.rtl}</td>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       </tr>
       {/loop}
       {if: $admin_mode == 'complex'}
@@ -147,9 +180,15 @@
         <td>{$data.tinggi}</td>
         <td>{$data.berat}</td>
         <td>{$data.gcs}</td>
+        <td>{$data.spo2}</td>
         <td>{$data.alergi}</td>
         <td rowspan="6" style="vertical-align:top;">
+<<<<<<< HEAD
           {?=nl2br($data.instruksi)?}<br><br>
+=======
+          Instruksi: {$data.instruksi}<br><br>
+          Evaluasi: {$data.evaluasi}<br><br>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           <div class="qrcodePetugas{$data.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
           {$data.nama_petugas}
           <script>
@@ -163,25 +202,28 @@
       </tr>
       <tr>
         <th colspan="2">Kesadaran</th>
-        <td colspan="6">{$data.kesadaran}</td>
+        <td colspan="7">{$data.kesadaran}</td>
       </tr>
       <tr>
         <th colspan="2">Subyektif</th>
+<<<<<<< HEAD
         <td colspan="6" style="vertical-align:top">{?=nl2br($data.keluhan)?}</td>
+=======
+        <td colspan="7">{$data.keluhan}</td>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       </tr>
-      <!--
       <tr>
         <th colspan="2">Obyektif</th>
-        <td colspan="6">{$data.pemeriksaan}</td>
+        <td colspan="7">{$data.pemeriksaan}</td>
       </tr>
       <tr>
         <th colspan="2">Assesment</th>
-        <td colspan="6">{$data.penilaian}</td>
+        <td colspan="7">{$data.penilaian}</td>
       </tr>
-	  -->
       <tr>
         <td>
           <div class="">
+            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $value.nip}
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$data.no_rawat}"
               data-tgl_perawatan="{$data.tgl_perawatan}"
@@ -199,6 +241,11 @@
               data-penilaian="{$data.penilaian}"
               data-rtl="{$data.rtl}"
               data-instruksi="{$data.instruksi}"
+<<<<<<< HEAD
+=======
+              data-evaluasi="{$data.evaluasi}"
+              data-spo2="{$data.spo2}"
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               disabled
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
@@ -207,14 +254,17 @@
               data-jam_rawat="{$data.jam_rawat}"
               disabled
               ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
+              {/if}
           </div>
         </td>
+<<<<<<< HEAD
         <th colspan="2">Obyektif</th>
         <td colspan="6" style="vertical-align:top">{?=nl2br($data.pemeriksaan)?}</td>
         <!--
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         <th colspan="2">Plan</th>
-        <td colspan="6">{$data.rtl}</td>
-		-->
+        <td colspan="7">{$data.rtl}</td>
       </tr>
       {/loop}
       {/if}

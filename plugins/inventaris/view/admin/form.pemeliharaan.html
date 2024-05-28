@@ -2,7 +2,11 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">
+<<<<<<< HEAD
                 <h3 class="panel-title">Form Pemeliharaan</h3>
+=======
+                <h3 class="panel-title">Form Perbaikan</h3>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
             </div>
             <div class="panel-body">
               <form name="user" action="{?=url(ADMIN.'/inventaris/pemeliharaansimpan/'.@$pemeliharaan.form.no_inventaris)?}" method="POST" enctype="multipart/form-data">
@@ -10,8 +14,12 @@
                   <label>Data Aset</label>
                   <select name="no_inventaris" class="form-control" data-use-search="true">
                       {loop: $pemeliharaan.aset}
+<<<<<<< HEAD
             <!--           <option value="{$value.no_inventaris}" {if: $value.no_inventaris == $pemeliharaan.form.no_inventaris}selected{/if}>{$value.nama_barang} [{$value.nama_merk}] - {$value.nama_ruang}</option> -->
                        <option value="{$value.no_inventaris}"  data-subtitle="{$value.nama_ruang}" data-right="{$value.nama_merk}" {if: $value.no_inventaris == $pemeliharaan.form.no_inventaris}selected{/if}>{$value.nama_barang}</option>
+=======
+                      <option value="{$value.no_inventaris}" {if: $value.no_inventaris == $pemeliharaan.form.no_inventaris}selected{/if}>{$value.nama_barang}</option>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                       {/loop}
                   </select>
               </div>

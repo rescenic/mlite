@@ -28,14 +28,18 @@
                 <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor Kartu</a></li>
                 <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynik', $value.no_ktp, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor KTP</a></li>
               {/if}
-              <li><a href="{?=url([ADMIN, 'pasien', 'resumeperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Resume Perawatan</a></li>
-              <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Riwayat Perawatan</a></li>
+              {if: $cek_pcare}
+                <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynokartu', 'noka', $value.no_peserta])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor Kartu</a></li>
+                <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynik', 'nik', $value.no_ktp])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor KTP</a></li>
+              {/if}
+              <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
+              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAP & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Tindakan</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
+<<<<<<< HEAD
               <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
               {if: $value.kronis !=''}
               <li><a href="#hapusobat_kronis" data-no_rawat="{$value.no_rawat}">Hapus Status Obat Kronis</a></li>
@@ -50,6 +54,19 @@
               {/if}
               {if: $this->core->getUserInfo('role') == 'ok'}
               <li><a href="#form_jadwaloperasi" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Input Jadwal Operasi</a></li>
+=======
+              <li class="dropdown-submenu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
+                <ul class="dropdown-menu">
+                  <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratsakit',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sakit</a></li>
+                </ul>
+              </li>
+              <li><a href="#obat_kronis" data-no_rawat="{$value.no_rawat}">Obat Kronis</a></li>
+              <li><a href="#kirimwaModal" data-toggle="modal" data-no_tlp="{$value.no_tlp}" data-nm_pasien="Yang terhormat {$value.nm_pasien} dengan nomor rekam medik {$value.no_rkm_medis}.&#013;&#010;&#013;&#010;-------------------&#013;&#010; Pesan WhatsApp ini dikirim otomatis oleh {$nama_instansi} &#013;&#010;Terima Kasih">Kirim WhatsApp</a></li>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               {/if}
             </ul>
           </td>
@@ -67,6 +84,7 @@
           <td style="white-space: nowrap;">
           {if: $value.kd_pj == 'BPJ'}
             {if: $cek_vclaim}
+              <div class="btn-group" role="group">
               <button type="button" name="button" class="btn btn-xs btn-primary sep"
                 data-no_rkm_medis="{$value.no_rkm_medis}"
                 data-nm_pasien="{$value.nm_pasien}"
@@ -76,6 +94,22 @@
                 disabled
                 {/if}
               ><span class="fa fa-send"></span> BPJS</button>
+              {if: $value.no_sep !=''}
+              <a href="{?=url([ADMIN, 'rawat_jalan', 'sepdetail', $value.no_sep])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#sepModal"><span class="fa fa-eye"></span></a>
+              {/if}
+              </div>
+            {/if}
+            {if: $cek_pcare}
+              <button type="button" name="button" class="btn btn-xs btn-info bridgingpcare"
+                data-no_rkm_medis="{$value.no_rkm_medis}"
+                data-nm_pasien="{$value.nm_pasien}"
+                data-no_rawat="{$value.no_rawat}"
+                data-no_peserta="{$value.no_peserta}"
+                data-tgl_registrasi="{$value.tgl_registrasi}"
+                {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
+                disabled
+                {/if}
+              ><span class="fa fa-refresh"></span> BPJS</button>
             {/if}
           {else}
             {$value.png_jawab}
@@ -83,7 +117,7 @@
           </td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.no_peserta}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.tgl_registrasi} {$value.jam_reg}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.stts}</td>
+          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{if: $value.stts == 'Dirujuk'}<a href="#" class="btn btn-xs btn-danger dirujuk" data-no_rawat="{?=convertNorawat($value.no_rawat)?}"><span class="fa fa-ambulance"></span> {$value.stts}</a>{else}{$value.stts}{/if}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_lanjut}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_bayar}</td>
           <td style="white-space: nowrap;">{if: $value.kronis !=''}KRONIS{/if}</td>
@@ -114,6 +148,65 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="bridgingpcareModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bridgingpcaretindakanobatModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dirujukModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="kirimwaModal" tabindex="-1" role="dialog" aria-labelledby="kirimwaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Kirim WhatsApp</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating number">
+          <label for="floatingPassword">Nomor</label>
+          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan">
+        </div>
+        <div class="form-floating message">
+          <label for="floatingPassword">Pesan</label>
+          <textarea name="message" rows="14" cols="100" class="form-control" id="message" placeholder="Tulis pesan anda.."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimPesanWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="sepModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="suratModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
   $('a[href="#soap"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
@@ -122,11 +215,13 @@
     var no_rawat = $(this).attr("data-no_rawat");
     var no_rkm_medis = $(this).attr("data-no_rkm_medis");
     var nm_pasien = $(this).attr("data-nm_pasien");
+    var umur = $(this).attr("data-umur");
     var tgl_registrasi = $(this).attr("data-tgl_registrasi");
 
     $('input:text[name=no_rawat]').val(no_rawat);
     $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
     $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=umur]').val(umur);
     $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
     $("#display").hide();
 
@@ -307,7 +402,7 @@
         }
         ],
         callback: function (result) {
-            console.log(result);
+            //console.log(result);
             // ketika ditekan tombol ok
             if (result){
               // mengirimkan perintah penghapusan
@@ -372,6 +467,7 @@
       }
     });
   });
+<<<<<<< HEAD
   $('a[href="#hapusobat_kronis"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -395,6 +491,8 @@
       }
     });
   });
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   $('.dataTables').DataTable({
     "order": [[ 3, "desc" ]],
@@ -471,13 +569,82 @@
     var url = baseURL + '/rawat_jalan/kontrol?t=' + mlite.token;
     $.post(url, {no_rkm_medis : no_rkm_medis,
     }, function(data) {
+      //console.log(data);
       // tampilkan data
       $("#form_rincian").hide();
       $("#form").hide();
       $("#notif").hide();
       $("#form_soap").hide();
       $("#form_kontrol").show();
-      $("#kontrol").html(data).show();
+      $("#surat_kontrol").html(data).show();
     });
   });
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".bridgingpcare", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var id_pasien = $(this).attr("data-no_rkm_medis");
+    var tgl_pendaftaran = $(this).attr("data-tgl_registrasi");
+    var loadURL =  baseURL + '/pcare/bridgingpcare/' + id_pasien + '/' + tgl_pendaftaran + '?t=' + mlite.token;
+
+    var modal = $('#bridgingpcareModal');
+    var modalContent = $('#bridgingpcareModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".dirujuk", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var loadURL =  baseURL + '/vclaim/dirujuk/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#dirujukModal');
+    var modalContent = $('#dirujukModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script>
+  $('#kirimwaModal').on('show.bs.modal', function(e) {
+      //get data-id attribute of the clicked element
+      var no_tlp = $(e.relatedTarget).data('no_tlp');
+      var nm_pasien = $(e.relatedTarget).data('nm_pasien');
+      //populate the textbox
+      $(e.currentTarget).find('input[name="number"]').val(no_tlp);
+      $(e.currentTarget).find('textarea[name="message"]').val(nm_pasien);
+  });
+
+  function KirimPesanWA() {
+  	var xhttp = new XMLHttpRequest();
+    var api_key = '{$waapitoken}';
+  	var sender = '{$waapiphonenumber}';
+  	var number = document.getElementById("number").value;
+  	var message = document.getElementById("message").value;
+  	console.log(api_key + " - " + number + " - " + message);
+  	xhttp.onreadystatechange = function() {
+  		if (this.readyState == 4 && this.status == 200) {
+  			var data=xhttp.responseText;
+  			var jsonResponse = JSON.parse(data);
+  			if(jsonResponse["status"] == true) {
+  				alert('Sukses mengirim pesan.');
+  			} else {
+          alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+  			}
+  		}
+  	};
+  	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
+  	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
+  }
 </script>

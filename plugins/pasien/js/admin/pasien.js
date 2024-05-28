@@ -37,7 +37,7 @@ $("#form").on("click", "#simpan", function(event){
   var nm_pasien = $('input:text[name=nm_pasien]').val();
   var nm_ibu = $('input:text[name=nm_ibu]').val();
   var tgl_lahir = $('#tgl_lahir').val();
-  var jk = $('input:radio[name=jk]:checked').val();
+  var jk = $('select[name=jk]').val();
   var gol_darah = $('select[name=gol_darah]').val();
   var stts_nikah = $('select[name=stts_nikah]').val();
   var agama = $('select[name=agama]').val();
@@ -60,6 +60,7 @@ $("#form").on("click", "#simpan", function(event){
   var nm_kel = $('#nm_kel').val();
   var kd_pj = $('select[name=kd_pj]').val();
   var no_peserta = $('input:text[name=no_peserta]').val();
+  var manual = $('#norm_manual').prop("checked") ? 1 : 0 ;
 
   var url = baseURL + '/pasien/save?t=' + mlite.token;
 
@@ -111,21 +112,27 @@ $("#form").on("click", "#simpan", function(event){
       nm_kec:nm_kec,
       nm_kel:nm_kel,
       kd_pj: kd_pj,
-      no_peserta: no_peserta
+      no_peserta: no_peserta,
+      manual: manual 
     } ,function(data) {
+      // alert(data);
+      var data = JSON.parse(data);
+      if(data.status == 'success')
+      {
+        $("#form").hide();
+        $("#tutupform").val("Buka Form");
+        $("#tutupform").attr("id", "bukaform");
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data pasien telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      } else {
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Gagal menyimpan data pasien!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }
       $("#display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
-      $("#form").hide();
-      $("#tutupform").val("Buka Form");
-      $("#tutupform").attr("id", "bukaform");
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data pasien telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
-    }).error(function () {
-      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Gagal menyimpan data pasien!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
     });
   }
 
@@ -233,7 +240,16 @@ $("#form").on("click","#kartu", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-  window.open(baseURL + '/pasien/kartu?no_rkm_medis=' + no_rkm_medis + '&t=' + mlite.token);
+  // window.open(baseURL + '/pasien/kartu?no_rkm_medis=' + no_rkm_medis + '&t=' + mlite.token);
+  $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:50%;height:50%;"><iframe src="' + baseURL + '/pasien/cetakkartu/' + no_rkm_medis + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+});
+
+// ketika tombol cetak ditekan
+$("#btn_cetak_jasper").click(function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var cari = $('input:text[name=cari]').val();
+  window.open(baseURL + '/jasper/pasien?cari=' + cari + '&t=' + mlite.token);
 });
 
 // reset form

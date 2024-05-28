@@ -2,12 +2,10 @@
 namespace Plugins\Kasir_Rawat_Jalan;
 
 use Systems\AdminModule;
-//use Systems\Lib\Fpdf\FPDF;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 use Systems\Lib\QRCode;
-use Systems\Lib\PHPMailer\PHPMailer;
-use Systems\Lib\PHPMailer\SMTP;
-use Systems\Lib\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
@@ -75,7 +73,7 @@ class Admin extends AdminModule
         $this->assign['kd_billing'] = 'RJ.'.date('d.m.Y.H.i.s');
         $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
         $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->db('penjab')->toArray();
+        $this->assign['penjab']       = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -125,54 +123,60 @@ class Admin extends AdminModule
       if($_POST['kat'] == 'tindakan') {
         $jns_perawatan = $this->db('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         if($_POST['provider'] == 'rawat_jl_dr') {
-          $this->db('rawat_jl_dr')->save([
-            'no_rawat' => $_POST['no_rawat'],
-            'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-            'kd_dokter' => $_POST['kode_provider'],
-            'tgl_perawatan' => $_POST['tgl_perawatan'],
-            'jam_rawat' => $_POST['jam_rawat'],
-            'material' => $jns_perawatan['material'],
-            'bhp' => $jns_perawatan['bhp'],
-            'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
-            'kso' => $jns_perawatan['kso'],
-            'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
-            'stts_bayar' => 'Belum'
-          ]);
+          for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
+            $this->db('rawat_jl_dr')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'kd_dokter' => $_POST['kode_provider'],
+              'tgl_perawatan' => $_POST['tgl_perawatan'],
+              'jam_rawat' => date('H:i:s', strtotime($_POST['jam_rawat']. ' +'.$i.'0 seconds')),
+              'material' => $jns_perawatan['material'],
+              'bhp' => $jns_perawatan['bhp'],
+              'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+              'kso' => $jns_perawatan['kso'],
+              'menejemen' => $jns_perawatan['menejemen'],
+              'biaya_rawat' => $jns_perawatan['total_byrdr'],
+              'stts_bayar' => 'Belum'
+            ]);
+          }
         }
         if($_POST['provider'] == 'rawat_jl_pr') {
-          $this->db('rawat_jl_pr')->save([
-            'no_rawat' => $_POST['no_rawat'],
-            'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-            'nip' => $_POST['kode_provider2'],
-            'tgl_perawatan' => $_POST['tgl_perawatan'],
-            'jam_rawat' => $_POST['jam_rawat'],
-            'material' => $jns_perawatan['material'],
-            'bhp' => $jns_perawatan['bhp'],
-            'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
-            'kso' => $jns_perawatan['kso'],
-            'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
-            'stts_bayar' => 'Belum'
-          ]);
+          for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
+            $this->db('rawat_jl_pr')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'nip' => $_POST['kode_provider2'],
+              'tgl_perawatan' => $_POST['tgl_perawatan'],
+              'jam_rawat' => date('H:i:s', strtotime($_POST['jam_rawat']. ' +'.$i.'0 seconds')),
+              'material' => $jns_perawatan['material'],
+              'bhp' => $jns_perawatan['bhp'],
+              'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+              'kso' => $jns_perawatan['kso'],
+              'menejemen' => $jns_perawatan['menejemen'],
+              'biaya_rawat' => $jns_perawatan['total_byrpr'],
+              'stts_bayar' => 'Belum'
+            ]);
+          }
         }
         if($_POST['provider'] == 'rawat_jl_drpr') {
-          $this->db('rawat_jl_drpr')->save([
-            'no_rawat' => $_POST['no_rawat'],
-            'kd_jenis_prw' => $_POST['kd_jenis_prw'],
-            'kd_dokter' => $_POST['kode_provider'],
-            'nip' => $_POST['kode_provider2'],
-            'tgl_perawatan' => $_POST['tgl_perawatan'],
-            'jam_rawat' => $_POST['jam_rawat'],
-            'material' => $jns_perawatan['material'],
-            'bhp' => $jns_perawatan['bhp'],
-            'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
-            'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
-            'kso' => $jns_perawatan['kso'],
-            'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
-            'stts_bayar' => 'Belum'
-          ]);
+          for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
+            $this->db('rawat_jl_drpr')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'kd_dokter' => $_POST['kode_provider'],
+              'nip' => $_POST['kode_provider2'],
+              'tgl_perawatan' => $_POST['tgl_perawatan'],
+              'jam_rawat' => date('H:i:s', strtotime($_POST['jam_rawat']. ' +'.$i.'0 seconds')),
+              'material' => $jns_perawatan['material'],
+              'bhp' => $jns_perawatan['bhp'],
+              'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
+              'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+              'kso' => $jns_perawatan['kso'],
+              'menejemen' => $jns_perawatan['menejemen'],
+              'biaya_rawat' => $jns_perawatan['total_byrdrpr'],
+              'stts_bayar' => 'Belum'
+            ]);
+          }
         }
       }
       if($_POST['kat'] == 'obat') {
@@ -200,7 +204,8 @@ class Admin extends AdminModule
             'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
             'status' => 'Simpan',
             'no_batch' => $get_gudangbarang['no_batch'],
-            'no_faktur' => $get_gudangbarang['no_faktur']
+            'no_faktur' => $get_gudangbarang['no_faktur'],
+            'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
           ]);
 
         $this->db('detail_pemberian_obat')
@@ -230,14 +235,6 @@ class Admin extends AdminModule
             'aturan' => $_POST['aturan_pakai']
           ]);
 
-      }
-      if($_POST['kat'] == 'tambahan_biaya') {
-        $this->db('tambahan_biaya')
-          ->save([
-            'no_rawat' => $_POST['no_rawat'],
-            'nama_biaya' => $_POST['nm_perawatan'],
-            'besar_biaya' => $_POST['biaya']
-          ]);
       }
 
       if($_POST['kat'] == 'laboratorium') {
@@ -342,15 +339,6 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function postHapusTambahanBiaya()
-    {
-      $this->db('tambahan_biaya')
-      ->where('no_rawat', $_POST['no_rawat'])
-      ->where('nama_biaya', $_POST['nama_biaya'])
-      ->delete();
-      exit();
-    }
-
     public function postHapusObat()
     {
       $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
@@ -376,7 +364,8 @@ class Admin extends AdminModule
           'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
           'status' => 'Hapus',
           'no_batch' => $get_gudangbarang['no_batch'],
-          'no_faktur' => $get_gudangbarang['no_faktur']
+          'no_faktur' => $get_gudangbarang['no_faktur'],
+          'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
         ]);
 
       $this->db('detail_pemberian_obat')
@@ -402,6 +391,9 @@ class Admin extends AdminModule
         ->join('reg_periksa', 'reg_periksa.kd_poli=poliklinik.kd_poli')
         ->where('no_rawat', $_POST['no_rawat'])
         ->oneArray();
+      if($poliklinik['stts_daftar'] == 'Lama') {
+        $poliklinik['registrasi'] = $poliklinik['registrasilama'];
+      }
 
       $rows_rawat_jl_dr = $this->db('rawat_jl_dr')->where('no_rawat', $_POST['no_rawat'])->toArray();
       $rows_rawat_jl_pr = $this->db('rawat_jl_pr')->where('no_rawat', $_POST['no_rawat'])->toArray();
@@ -451,7 +443,6 @@ class Admin extends AdminModule
       }
 
       $rows_pemberian_obat = $this->db('detail_pemberian_obat')
-      ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
       ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
       ->where('detail_pemberian_obat.status', 'Ralan')
       ->toArray();
@@ -461,6 +452,8 @@ class Admin extends AdminModule
       $no_obat = 1;
       foreach ($rows_pemberian_obat as $row) {
         $row['nomor'] = $no_obat++;
+        $databarang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
+        $row['nama_brng'] = $databarang['nama_brng'];
         $jumlah_total_obat += floatval($row['total']);
         $detail_pemberian_obat[] = $row;
       }
@@ -495,16 +488,17 @@ class Admin extends AdminModule
         $periksa_radiologi[] = $row;
       }
 
-      $rows_tambahan_biaya = $this->db('tambahan_biaya')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->toArray();
-      $tambahan_biaya = [];
-      $no_tambahan_biaya = 1;
-      $jumlah_total_tambahan = 0;
-      foreach ($rows_tambahan_biaya as $row) {
-        $row['nomor'] = $no_tambahan_biaya++;
-        $jumlah_total_tambahan += $row['besar_biaya'];
-        $tambahan_biaya[] = $row;
+      $jumlah_total_operasi = 0;
+      $operasis = $this->db('operasi')->where('no_rawat', $_POST['no_rawat'])->where('status', 'Ralan')->toArray();
+      foreach ($operasis as $operasi) {
+        $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
+        $jumlah_total_operasi += $operasi['jumlah'];
+      }
+      $jumlah_total_obat_operasi = 0;
+      $obat_operasis = $this->db('beri_obat_operasi')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      foreach ($obat_operasis as $obat_operasi) {
+        $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
+        $jumlah_total_obat_operasi += $obat_operasi['harga'];
       }
 
       echo $this->draw('rincian.html', [
@@ -521,8 +515,8 @@ class Admin extends AdminModule
         'jumlah_total_lab' => $jumlah_total_lab,
         'periksa_radiologi' => $periksa_radiologi,
         'jumlah_total_radiologi' => $jumlah_total_radiologi,
-        'tambahan_biaya' => $tambahan_biaya,
-        'jumlah_total_tambahan' => $jumlah_total_tambahan,
+        'jumlah_total_operasi' => $jumlah_total_operasi,
+        'jumlah_total_obat_operasi' => $jumlah_total_obat_operasi,
         'no_rawat' => $_POST['no_rawat']
       ]);
       exit();
@@ -549,16 +543,6 @@ class Admin extends AdminModule
         ->limit(10)
         ->toArray();
       echo $this->draw('obat.html', ['obat' => $obat]);
-      exit();
-    }
-
-    public function anyTambahanBiaya()
-    {
-      $tambahan_biaya = $this->db('tambahan_biaya')
-        ->like('nama_biaya', '%'.$_POST['tambahan_biaya'].'%')
-        ->limit(10)
-        ->toArray();
-      echo $this->draw('tambahan_biaya.html', ['tambahan_biaya' => $tambahan_biaya]);
       exit();
     }
 
@@ -650,43 +634,53 @@ class Admin extends AdminModule
 
       if($this->settings('keuangan', 'jurnal_kasir') == 1) {
           // jurnal_pendaftaran //
-          if($_POST['jurnal_pendaftaran'] != 0) {
-            $no_jurnal_pendaftaran = $this->setNoJurnal();
+          if($_POST['jurnal_pendaftaran'] != '0,00') {
+            $no_jurnal_pendaftaran = $this->core->setNoJurnal();
+            $keterangan = $this->db('mlite_rekening')
+            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_pendaftaran'))
+            ->oneArray();
             $query_jurnal_pendaftaran =  $this->db('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_pendaftaran,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Pendaftaran rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => $keterangan['nm_rek']
               ]);
             if($query_jurnal_pendaftaran) {
               $this->db('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_pendaftaran,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_pendaftaran'),
-                'debet' => '0',
-                'kredit' => str_replace(".", "", $_POST['jurnal_pendaftaran'])
+                'arus_kas' => '1',
+                'debet' => str_replace(".", "", substr($_POST['jurnal_pendaftaran'], 0, strpos($_POST['jurnal_pendaftaran'], ","))), 
+                'kredit' => '0' 
               ]);
             }
             unset($_POST['jurnal_pendaftaran']);
           }
-          // End jurnal_pendaftaran //
+          // End jurnal_pendaftaran // 
 
           // jurnal_tindakan_ralan //
-          if($_POST['jurnal_tindakan_ralan'] != 0) {
-            $no_jurnal_tindakan_ralan = $this->setNoJurnal();
+          if($_POST['jurnal_tindakan_ralan'] != '0,00') {
+            $no_jurnal_tindakan_ralan = $this->core->setNoJurnal();
+            $keterangan = $this->db('mlite_rekening')
+            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_tindakan'))
+            ->oneArray();
             $query_jurnal_tindakan_ralan =  $this->db('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_tindakan_ralan,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Tindakan rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Tindakan rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => $keterangan['nm_rek']
               ]);
             if($query_jurnal_tindakan_ralan) {
               $this->db('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_tindakan_ralan,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tindakan_ralan'),
-                'debet' => '0',
-                'kredit' => str_replace(".", "", $_POST['jurnal_tindakan_ralan'])
+                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tindakan'),
+                'arus_kas' => '1',
+                'debet' => str_replace(".", "", substr($_POST['jurnal_tindakan_ralan'], 0, strpos($_POST['jurnal_tindakan_ralan'], ","))), 
+                'kredit' => '0'
               ]);
             }
             unset($_POST['jurnal_tindakan_ralan']);
@@ -694,21 +688,26 @@ class Admin extends AdminModule
           // End jurnal_tindakan_ralan //
 
           // jurnal_obat_bhp //
-          if($_POST['jurnal_obat_bhp'] != 0) {
-            $no_jurnal_obat_bhp = $this->setNoJurnal();
+          if($_POST['jurnal_obat_bhp'] != '0,00') {
+            $no_jurnal_obat_bhp = $this->core->setNoJurnal();
+            $keterangan = $this->db('mlite_rekening')
+            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_obat_bhp'))
+            ->oneArray();
             $query_jurnal_obat_bhp =  $this->db('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_obat_bhp,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Obat dan BHP '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Obat dan BHP '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => $keterangan['nm_rek']
               ]);
             if($query_jurnal_obat_bhp) {
               $this->db('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_obat_bhp,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_obat_bhp'),
-                'debet' => '0',
-                'kredit' => str_replace(".", "", $_POST['jurnal_obat_bhp'])
+                'arus_kas' => '1',
+                'debet' => str_replace(".", "", substr($_POST['jurnal_obat_bhp'], 0, strpos($_POST['jurnal_obat_bhp'], ","))),
+                'kredit' => '0'
               ]);
             }
             unset($_POST['jurnal_obat_bhp']);
@@ -716,21 +715,26 @@ class Admin extends AdminModule
           // End jurnal_obat_bhp //
 
           // jurnal_laboratorium //
-          if($_POST['jurnal_laboratorium'] != 0) {
-            $no_jurnal_laboratorium = $this->setNoJurnal();
+          if($_POST['jurnal_laboratorium'] != '0,00') {
+            $no_jurnal_laboratorium = $this->core->setNoJurnal();
+            $keterangan = $this->db('mlite_rekening')
+            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_laboratorium'))
+            ->oneArray();
             $query_jurnal_laboratorium =  $this->db('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_laboratorium,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Laboratorium '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Laboratorium '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => $keterangan['nm_rek']
               ]);
             if($query_jurnal_laboratorium) {
               $this->db('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_laboratorium,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_laboratorium'),
-                'debet' => '0',
-                'kredit' => str_replace(".", "", $_POST['jurnal_laboratorium'])
+                'arus_kas' => '1',
+                'debet' => str_replace(".", "", substr($_POST['jurnal_laboratorium'], 0, strpos($_POST['jurnal_laboratorium'], ","))), 
+                'kredit' => '0' 
               ]);
             }
             unset($_POST['jurnal_laboratorium']);
@@ -738,48 +742,31 @@ class Admin extends AdminModule
           // End jurnal_laboratorium //
 
           // jurnal_radiologi//
-          if($_POST['jurnal_radiologi'] != 0) {
-            $no_jurnal_radiologi = $this->setNoJurnal();
+          if($_POST['jurnal_radiologi'] != '0,00') {
+            $no_jurnal_radiologi = $this->core->setNoJurnal();
+            $keterangan = $this->db('mlite_rekening')
+            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_radiologi'))
+            ->oneArray();
             $query_jurnal_radiologi =  $this->db('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_radiologi,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Radiologi '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Radiologi '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => $keterangan['nm_rek']
               ]);
             if($query_jurnal_radiologi) {
               $this->db('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_radiologi,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_radiologi'),
-                'debet' => '0',
-                'kredit' => str_replace(".", "", $_POST['jurnal_radiologi'])
+                'arus_kas' => '1',
+                'debet' => str_replace(".", "", substr($_POST['jurnal_radiologi'], 0, strpos($_POST['jurnal_radiologi'], ","))), 
+                'kredit' => '0' 
               ]);
             }
             unset($_POST['jurnal_radiologi']);
           }
           // End jurnal_radiologi //
-
-          // jurnal_tambahan_biaya //
-          if($_POST['jurnal_tambahan_biaya'] != 0) {
-            $no_jurnal_tambahan_biaya = $this->setNoJurnal();
-            $query_jurnal_tambahan_biaya =  $this->db('mlite_jurnal')->save([
-                'no_jurnal' => $no_jurnal_tambahan_biaya,
-                'no_bukti' => $_POST['no_rawat'],
-                'tgl_jurnal' => date('Y-m-d'),
-                'jenis' => 'U',
-                'keterangan' => 'Tambahan biaya'.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
-              ]);
-            if($query_jurnal_tambahan_biaya) {
-              $this->db('mlite_detailjurnal')->save([
-                'no_jurnal' => $no_jurnal_tambahan_biaya,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tambahan_biaya'),
-                'debet' => '0',
-                'kredit' => str_replace(".", "", $_POST['jurnal_tambahan_biaya'])
-              ]);
-            }
-            unset($_POST['jurnal_tambahan_biaya']);
-          }
-          // End jurnal_tambahan_biaya //
       }
 
       unset($_POST['jurnal_pendaftaran']);
@@ -787,7 +774,6 @@ class Admin extends AdminModule
       unset($_POST['jurnal_obat_bhp']);
       unset($_POST['jurnal_laboratorium']);
       unset($_POST['jurnal_radiologi']);
-      unset($_POST['jurnal_tambahan_biaya']);
 
       $query = $this->db('mlite_billing')->save($_POST);
       if($query) {
@@ -808,7 +794,7 @@ class Admin extends AdminModule
         }
         break;
         case "besar":
-        $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('tgl_billing')->desc('jam_billing')->oneArray();
+        $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
 
         $result_detail['poliklinik'] = $this->db('poliklinik')
           ->join('reg_periksa', 'reg_periksa.kd_poli = poliklinik.kd_poli')
@@ -893,196 +879,82 @@ class Admin extends AdminModule
           $total_periksa_radiologi += $row['biaya'];
         }
 
-        $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
-          ->where('no_rawat', $_GET['no_rawat'])
-          ->toArray();
-
-        $total_tambahan_biaya = 0;
-        foreach ($result_detail['tambahan_biaya'] as $row) {
-          $total_tambahan_biaya += $row['besar_biaya'];
+        $jumlah_total_operasi = 0;
+        $operasis = $this->db('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $_GET['no_rawat'])->where('operasi.status', 'Ralan')->toArray();
+        $result_detail['operasi'] = [];
+        foreach ($operasis as $operasi) {
+          $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
+          $jumlah_total_operasi += $operasi['jumlah'];
+          $result_detail['operasi'][] = $operasi;
+        }
+        $jumlah_total_obat_operasi = 0;
+        $obat_operasis = $this->db('beri_obat_operasi')->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')->where('no_rawat', $_GET['no_rawat'])->toArray();
+        $result_detail['obat_operasi'] = [];
+        foreach ($obat_operasis as $obat_operasi) {
+          $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
+          $jumlah_total_obat_operasi += $obat_operasi['harga'];
+          $result_detail['obat_operasi'][] = $obat_operasi;
         }
 
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
 
-        /* Print as pdf */
-        $pdf = new PDF_MC_Table('P','mm','A4');
-        $pdf->AddPage();
-
-        $pdf->Image('../'.$settings['logo'], 10, 10, '18', '18', 'png');
-
-        //set font to arial, bold, 14pt
-        $pdf->SetFont('Arial','B',14);
-
-        //Cell(width , height , text , border , end line , [align] )
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['nama_instansi'],0,0);
-        $pdf->Cell(69 ,5,'INVOICE',0,1);//end of line
-
-        //set font to arial, regular, 12pt
-        $pdf->SetFont('Arial','',12);
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['alamat'],0,0);
-        $pdf->Cell(69 ,5,'',0,1);//end of line
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['kota'].' - '.$settings['propinsi'],0,0);
-        $pdf->Cell(25 ,5,'Tanggal',0,0);
-        $pdf->Cell(44 ,5,': '.$result['tgl_billing'],0,1);//end of line
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['nomor_telepon'],0,0);
-        $pdf->Cell(25 ,5,'Faktur',0,0);
-        $pdf->Cell(44 ,5,': '.$result['kd_billing'],0,1);//end of line
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['email'],0,0);
-        $pdf->Cell(25 ,5,'Nomor RM',0,0);
-        $pdf->Cell(44 ,5,': '.$pasien['no_rkm_medis'],0,1);//end of line
-
-        //make a dummy empty cell as a vertical spacer
-        $pdf->Cell(189 ,10,'',0,1);//end of line
-
-        //billing address
-        $pdf->Cell(20 ,5,'Kepada :',0,0);//end of line
-        $pdf->SetFont('Arial','B',12);
-        $pdf->Cell(90 ,5,$pasien['nm_pasien'],0,1);
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(90 ,5,$pasien['alamat'],0,1);
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(90 ,5,$pasien['no_tlp'],0,1);
-
-        //make a dummy empty cell as a vertical spacer
-        $pdf->Cell(189 ,10,'',0,1);//end of line
-
-        //invoice contents
-        $pdf->SetFont('Arial','B',12);
-
-        $pdf->Cell(10 ,7,'No',1,0);
-        $pdf->Cell(110 ,7,'Item',1,0);
-        $pdf->Cell(25 ,7,'Jumlah',1,0);
-        $pdf->Cell(44 ,7,'Total',1,1);//end of line
-
-        $pdf->SetFont('Arial','',11);
-
-        //Numbers are right-aligned so we give 'R' after new line parameter
-
-        $pdf->Cell(10 ,5,'1',1,0);
-        $pdf->Cell(110 ,5,'Biaya Pendaftaran Poliklinik',1,0);
-        $pdf->Cell(25 ,5,'1',1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($result_detail['poliklinik']['registrasi'],2,',','.'),1,1,'R');//end of line
-
-        $pdf->Cell(10 ,5,'2',1,0);
-        $pdf->Cell(110 ,5,'Biaya Obat & BHP',1,0);
-        $pdf->Cell(25 ,5,count($result_detail['detail_pemberian_obat']),1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($total_detail_pemberian_obat,2,',','.'),1,1,'R');//end of line
-
-        $pdf->Cell(10 ,5,'3',1,0);
-        $pdf->Cell(110 ,5,'Jasa Dokter',1,0);
-        $pdf->Cell(25 ,5,count($result_detail['rawat_jl_dr']),1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($total_rawat_jl_dr,2,',','.'),1,1,'R');//end of line
-
-        $pdf->Cell(10 ,5,'4',1,0);
-        $pdf->Cell(110 ,5,'Jasa Perawat',1,0);
-        $pdf->Cell(25 ,5,count($result_detail['rawat_jl_pr']),1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($total_rawat_jl_pr,2,',','.'),1,1,'R');//end of line
-
-        $pdf->Cell(10 ,5,'5',1,0);
-        $pdf->Cell(110 ,5,'Jasa Dokter & Perawat',1,0);
-        $pdf->Cell(25 ,5,count($result_detail['rawat_jl_drpr']),1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($total_rawat_jl_drpr,2,',','.'),1,1,'R');//end of line
-
-        $pdf->Cell(10 ,5,'6',1,0);
-        $pdf->Cell(110 ,5,'Jasa Laboratorium',1,0);
-        $pdf->Cell(25 ,5,count($result_detail['periksa_lab']),1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($total_periksa_lab,2,',','.'),1,1,'R');//end of line
-
-        $pdf->Cell(10 ,5,'7',1,0);
-        $pdf->Cell(110 ,5,'Jasa Radiologi',1,0);
-        $pdf->Cell(25 ,5,count($result_detail['periksa_radiologi']),1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($total_periksa_radiologi,2,',','.'),1,1,'R');//end of line
-
-        $pdf->Cell(10 ,5,'8',1,0);
-        $pdf->Cell(110 ,5,'Biaya Tambahan',1,0);
-        $pdf->Cell(25 ,5,count($result_detail['tambahan_biaya']),1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($total_tambahan_biaya,2,',','.'),1,1,'R');//end of line
-
-        $pdf->SetFont('Arial','B',14);
-
-        //summary
-        /*$pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(25 ,5,'Subtotal',0,0);
-        $pdf->Cell(44 ,5,'4,450',1,1,'R');//end of line
-
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(25 ,5,'Taxable',0,0);
-        $pdf->Cell(44 ,5,'0',1,1,'R');//end of line
-
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(25 ,5,'Tax Rate',0,0);
-        $pdf->Cell(44 ,5,'10%',1,1,'R');//end of line*/
-
-        $pdf->Cell(120 ,15,'',0,0);
-        $pdf->Cell(25 ,15,'Total',0,0);
-        $pdf->Cell(44 ,15,'Rp. '.number_format($result_detail['poliklinik']['registrasi']+$total_detail_pemberian_obat+$total_rawat_jl_dr+$total_rawat_jl_pr+$total_rawat_jl_drpr+$total_periksa_lab+$total_periksa_radiologi+$total_tambahan_biaya,2,',','.'),0,0,'R');//end of line
-
-        $pdf->Cell(189 ,20,'',0,1);//end of line
-
-        $pdf->SetFont('Arial','',11);
-
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
-
         $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
-        //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
         $im=$qr->createImage(4,4);
-        imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+        imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
         imagedestroy($im);
 
-        $image = BASE_DIR."/admin/tmp/qrcode.png";
-
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );
-        $pdf->Cell(189 ,32,'',0,1);//end of line
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(69 ,5,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
+        $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
+        $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
 
         if (file_exists(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf')) {
           unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
         }
 
-        $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
-        //$pdf->Output();
-
-        echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+        $mpdf = new \Mpdf\Mpdf([
+          'mode' => 'utf-8',
+          'format' => 'A4', 
+          'orientation' => 'P'
+        ]);
+  
+        $css = '
+        <style>
+          del { 
+            display: none;
+          }
+          table {
+            padding-top: 1cm;
+            padding-bottom: 1cm;
+          }
+          td, th {
+            border-bottom: 1px solid #dddddd;
+            padding: 5px;
+          }        
+          tr:nth-child(even) {
+            background-color: #ffffff;
+          }
+        </style>
+        ';
+        
+        $url = url('admin/tmp/billing.besar.html');
+        $html = file_get_contents($url);
+        $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+        $mpdf->WriteHTML($css);
+        $mpdf->WriteHTML($html);
+    
+        // Output a PDF file save to server
+        $mpdf->Output(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf','F');
+                
+        echo $this->draw('billing.besar.html', ['wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
         case "kecil":
-        $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->oneArray();
+        $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
         echo $this->draw('billing.kecil.html', ['billing' => $result, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
       }
       exit();
-    }
-
-    public function setNoJurnal()
-    {
-        $date = date('Y-m-d');
-        $last_no_jurnal = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM jurnal WHERE tgl_jurnal = '$date'");
-        $last_no_jurnal->execute();
-        $last_no_jurnal = $last_no_jurnal->fetch();
-        if(empty($last_no_jurnal[0])) {
-          $last_no_jurnal[0] = '000000';
-        }
-        $next_no_jurnal = sprintf('%06s', ($last_no_jurnal[0] + 1));
-        $next_no_jurnal = 'JR'.date('Ymd').''.$next_no_jurnal;
-
-        return $next_no_jurnal;
     }
 
     public function postKirimEmail() {
@@ -1098,7 +970,7 @@ class Admin extends AdminModule
       $binary_content = file_get_contents($file);
 
       if ($binary_content === false) {
-         throw new Exception("Could not fetch remote content from: '$url'");
+         throw new Exception("Could not fetch remote content from: '$file'");
       }
 
 	    $mail = new PHPMailer(true);
@@ -1130,6 +1002,12 @@ class Admin extends AdminModule
       $mail->Body = $temp;
 
       $mail->send();
+    }
+
+    public function postCekWaktu()
+    {
+      echo date('H:i:s');
+      exit();
     }
 
     public function getJavascript()

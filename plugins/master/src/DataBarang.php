@@ -4,6 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
+
 class DataBarang
 {
 
@@ -263,6 +264,18 @@ class DataBarang
     public function postHapus()
     {
       return $this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->update(['status', '0']);
+    }
+
+    public function postMaxId()
+    {
+      $max_id = $this->db('databarang')->select(['kode_brng' => 'ifnull(MAX(CONVERT(RIGHT(kode_brng,5),signed)),0)'])->oneArray();
+      if(empty($max_id['kode_brng'])) {
+        $max_id['kode_brng'] = '00000';
+      }
+      $_next_max_id = sprintf('%05s', ($max_id['kode_brng'] + 1));
+      $next_max_id = 'B'.$_next_max_id;
+      echo $next_max_id;
+      exit();
     }
 
 }

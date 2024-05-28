@@ -5,7 +5,7 @@
         <tr>
           <th>Kode Perawatan</th>
           <th>Nama Perawatan</th>
-          <th>Cara Bayar</th>
+          <th>Tarif</th>
         </tr>
       </thead>
       <tbody>
@@ -14,12 +14,12 @@
         <tr class="edit" data-kd_jenis_prw="{$value.kd_jenis_prw}">
           <td>{$value.kd_jenis_prw}</td>
           <td>{$value.nm_perawatan}</td>
-          <td>{$value.png_jawab}</td>
+          <td>{$value.total_byr}</td>
         </tr>
         {/loop}
         {else}
         <tr>
-          <td colspan="2" class="text-center">Tidak ada data perawatan.</td>
+          <td colspan="3" class="text-center">Tidak ada data perawatan.</td>
         </tr>
         {/if}
       </tbody>

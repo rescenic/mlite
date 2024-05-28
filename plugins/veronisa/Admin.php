@@ -4,11 +4,25 @@ namespace Plugins\Veronisa;
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
 use Systems\Lib\QRCode;
+<<<<<<< HEAD
+=======
+use LZCompressor\LZString;
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
 class Admin extends AdminModule
 {
 
+<<<<<<< HEAD
   private $_uploads = WEBAPPS_PATH . '/berkasrawat/pages/uploadvero';
+=======
+  private $_uploads = WEBAPPS_PATH . '/berkasrawat/pages/upload';
+
+  protected $consid;
+  protected $secretkey;
+  protected $user_key;
+  protected $api_url;
+  protected $assign;
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
   public function init()
   {
@@ -62,8 +76,12 @@ class Admin extends AdminModule
           'id' => NULL,
           'nosep' => $_POST['nosep'],
           'tanggal' => date('Y-m-d'),
+<<<<<<< HEAD
           // 'catatan' => $_POST['catatan'],
            'catatan' => $_POST['status'].' - '.$_POST['catatan'],
+=======
+          'catatan' => $_POST['catatan'],
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           'username' => $this->core->getUserInfo('username', null, true)
         ]);
       }
@@ -71,6 +89,10 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       if(MULTI_APP) {
 
         $curl = curl_init();
@@ -92,6 +114,7 @@ class Admin extends AdminModule
         $response = curl_exec($curl);
 
         curl_close($curl);
+<<<<<<< HEAD
         //echo $response;
         if($response == 'Success') {
           $this->notify('success', 'Sukses menambahkan gambar');
@@ -101,6 +124,17 @@ class Admin extends AdminModule
 
       } else {
          $dir    = $this->_uploads;
+=======
+        $json = json_decode($response, true);
+        if($json['status'] == 'Success') {
+          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$json['msg'].'" width="150" />';
+        } else {
+          echo 'Gagal menambahkan gambar';
+        }
+
+      } else { 
+        $dir    = $this->_uploads;
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $cntr   = 0;
 
         $image = $_FILES['files']['tmp_name'];
@@ -109,13 +143,18 @@ class Admin extends AdminModule
         if ($img->load($image)) {
           $imgName = time() . $cntr++;
           $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+<<<<<<< HEAD
           $lokasi_file = 'pages/uploadvero/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+=======
+          $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           $img->save($imgPath);
           $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
           if ($query) {
             $this->notify('success', 'Simpan berkas digital perawatan sukses.');
           }
         }
+<<<<<<< HEAD
         // $dir    = $this->_uploads;
         // $cntr   = 0;
 
@@ -132,6 +171,8 @@ class Admin extends AdminModule
         //     $this->notify('success', 'Simpan berkas digital perawatan sukses.');
         //   }
         // }
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       }
     }
 
@@ -198,6 +239,7 @@ class Admin extends AdminModule
           ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
           ->asc('master_berkas_digital.nama')
           ->toArray();
+<<<<<<< HEAD
         $galleri_pasien = $this->db('mlite_pasien_galleries_items')
           ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
           ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
@@ -215,12 +257,17 @@ class Admin extends AdminModule
             $berkas_digital_pasien[] = $galleri;
           }
         }
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
         $row = htmlspecialchars_array($row);
         $row['pdfURL'] = url([ADMIN, 'veronisa', 'pdf', $this->convertNorawat($row['no_rawat'])]);
         $row['batalURL'] = url([ADMIN, 'veronisa', 'batal', $this->convertNorawat($row['no_rawat'])]);
         $row['berkas_digital'] = $berkas_digital;
+<<<<<<< HEAD
         $row['berkas_digital_pasien'] = $berkas_digital_pasien;
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $row['formSepURL'] = url([ADMIN, 'veronisa', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
         $row['setstatusURL']  = url([ADMIN, 'veronisa', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
         $row['status_pengajuan'] = $this->db('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
@@ -265,7 +312,11 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $data['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
+<<<<<<< HEAD
       $decompress = decompress($stringDecrypt);
+=======
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     }
     if ($data != null) {
       $data = '{
@@ -313,7 +364,11 @@ class Admin extends AdminModule
       $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
       $decompress = '""';
       if (!empty($stringDecrypt)) {
+<<<<<<< HEAD
         $decompress = decompress($stringDecrypt);
+=======
+        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       }
       if ($data_rujukan != null) {
         $data_rujukan = '{
@@ -435,6 +490,7 @@ class Admin extends AdminModule
       ->asc('master_berkas_digital.nama')
       ->toArray();
 
+<<<<<<< HEAD
     $galleri_pasien = $this->db('mlite_pasien_galleries_items')
       ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
       ->where('mlite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
@@ -695,6 +751,10 @@ class Admin extends AdminModule
     /* End menggunakan billing bawaan mlITE */
 
 
+=======
+    $no_rawat = $this->revertNorawat($id);
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     /** Billing versi mlite */
 
     $billing_mlite_settings = $this->settings('settings');
@@ -787,6 +847,7 @@ class Admin extends AdminModule
       $total_periksa_radiologi += $row['biaya'];
     }
 
+<<<<<<< HEAD
     $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
       ->where('status', 'ralan')
       ->where('no_rawat', $no_rawat)
@@ -797,6 +858,8 @@ class Admin extends AdminModule
       $total_tambahan_biaya += $row['besar_biaya'];
     }
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $jumlah_total_operasi = 0;
     $operasis = $this->db('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $no_rawat)->where('operasi.status', 'Ralan')->toArray();
     $result_detail['operasi'] = [];
@@ -817,11 +880,19 @@ class Admin extends AdminModule
     $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
     //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
     $im=$qr->createImage(4,4);
+<<<<<<< HEAD
     imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
     imagedestroy($im);
 
     $image = BASE_DIR."/admin/tmp/qrcode.png";
     $qrCode = "../../../admin/tmp/qrcode.png";
+=======
+    imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
+    imagedestroy($im);
+
+    $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
+    $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
     $this->tpl->set('billing_mlite_detail', $result_detail);
     $this->tpl->set('billing_mlite', $billing_result);
@@ -832,6 +903,7 @@ class Admin extends AdminModule
 
     /** End billing versi mlite **/
 
+<<<<<<< HEAD
     // $instansi['logo'] = $this->settings->get('settings.logo');
     // $instansi['nama_instansi'] = $this->settings->get('settings.nama_instansi');
     // $instansi['alamat'] = $this->settings->get('settings.alamat');
@@ -839,6 +911,15 @@ class Admin extends AdminModule
     // $instansi['propinsi'] = $this->settings->get('settings.propinsi');
     // $instansi['nomor_telepon'] = $this->settings->get('settings.nomor_telepon');
     // $instansi['email'] = $this->settings->get('settings.email');
+=======
+    $instansi['logo'] = $this->settings->get('settings.logo');
+    $instansi['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+    $instansi['alamat'] = $this->settings->get('settings.alamat');
+    $instansi['kota'] = $this->settings->get('settings.kota');
+    $instansi['propinsi'] = $this->settings->get('settings.propinsi');
+    $instansi['nomor_telepon'] = $this->settings->get('settings.nomor_telepon');
+    $instansi['email'] = $this->settings->get('settings.email');
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
     $this->tpl->set('instansi', $instansi);
 
@@ -875,6 +956,7 @@ class Admin extends AdminModule
       ->oneArray();
     $this->tpl->set('resume_pasien', $resume_pasien);
     */
+<<<<<<< HEAD
     $resume_pasien = $this->db('resume_pasien')
       ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
       ->where('no_rawat', $this->revertNorawat($id))
@@ -886,6 +968,8 @@ class Admin extends AdminModule
         ->oneArray();
     }
     $this->tpl->set('resume_pasien', $resume_pasien);
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
     $pasien = $this->db('pasien')
       ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
@@ -984,6 +1068,7 @@ class Admin extends AdminModule
     $hasil_radiologi = $this->db('hasil_radiologi')
       ->where('no_rawat', $this->revertNorawat($id))
       ->toArray();
+<<<<<<< HEAD
     $klinis_radiologi = $this->db('diagnosa_pasien_klinis')
       ->join('permintaan_radiologi', 'permintaan_radiologi.noorder=diagnosa_pasien_klinis.noorder')
       ->where('no_rawat', $this->revertNorawat($id))
@@ -991,6 +1076,8 @@ class Admin extends AdminModule
     $saran_rad = $this->db('saran_kesan_rad')
       ->where('no_rawat', $this->revertNorawat($id))
       ->toArray();
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $pemeriksaan_laboratorium = [];
     $rows_pemeriksaan_laboratorium = $this->db('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
@@ -1004,6 +1091,7 @@ class Admin extends AdminModule
         ->toArray();
       $pemeriksaan_laboratorium[] = $value;
     }
+<<<<<<< HEAD
       $pemberian_obat = [];
       $rows_pemberian_obat = $this->db('detail_pemberian_obat')
         ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
@@ -1022,6 +1110,12 @@ class Admin extends AdminModule
     //   ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
     //   ->where('no_rawat', $this->revertNorawat($id))
     //   ->toArray();
+=======
+    $pemberian_obat = $this->db('detail_pemberian_obat')
+      ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+      ->where('no_rawat', $this->revertNorawat($id))
+      ->toArray();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $riwayat_obat = [];
     $list_riwayat = $this->db('reg_periksa')
     ->where('no_rkm_medis',$this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
@@ -1070,8 +1164,11 @@ class Admin extends AdminModule
     $this->tpl->set('operasi', $operasi);
     $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
     $this->tpl->set('hasil_radiologi', $hasil_radiologi);
+<<<<<<< HEAD
     $this->tpl->set('klinis_radiologi', $klinis_radiologi);
     $this->tpl->set('saran_rad', $saran_rad);
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
     $this->tpl->set('pemberian_obat', $pemberian_obat);
     $this->tpl->set('obat_operasi', $obat_operasi);
@@ -1079,11 +1176,17 @@ class Admin extends AdminModule
     $this->tpl->set('riwayat_obat', $riwayat_obat);
 
     $this->tpl->set('berkas_digital', $berkas_digital);
+<<<<<<< HEAD
     $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
     $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
     $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
     $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));
     // $this->tpl->set('pengaturan_billing', $this->settings->get('veronisa.billing'));
+=======
+    $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
+    $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
+    $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     echo $this->tpl->draw(MODULES . '/veronisa/view/admin/pdf.html', true);
     exit();
   }
@@ -1167,6 +1270,7 @@ class Admin extends AdminModule
     redirect(url([ADMIN, 'veronisa', 'settings']));
   }
 
+<<<<<<< HEAD
   public function getHapusBerkas($no_rawat, $nama_file)
   {
     $berkasPerawatan = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->like('lokasi_file', '%'.$nama_file.'%')->oneArray();
@@ -1195,6 +1299,8 @@ class Admin extends AdminModule
     exit();
   }
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   public function getJavascript()
   {
     header('Content-type: text/javascript');

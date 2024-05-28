@@ -25,12 +25,11 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Tahun</label>
-                            <!-- <input type="text" name="tahun" class="form-control" value="{$jadwal.tahun}"/> -->
-                            <select name="tahun" id="tahun" data-use-search="true" class="form-control">
-                              {loop: $jadwal.tahun}
+                           	<select name="tahun" id="tahun" data-use-search="true" class="form-control">
+                          	{loop: $jadwal.tahun}
                                 <option value="{$value}"{if: $value == $jadwal.form.tahun} selected{/if}>{$value}</option>
                               {/loop}
-                            </select>
+							</select>
                         </div>
                     </div>
                     <div class="col-md-4">

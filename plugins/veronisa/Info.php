@@ -2,6 +2,7 @@
 
 return [
     'name'          =>  'Veronisa',
+<<<<<<< HEAD
     'description'   =>  'Modul Verifikasi Obat Kronis RSUD H. Damanhuri',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
@@ -38,6 +39,14 @@ return [
 
       $core->mysql()->pdo()->exec("ALTER TABLE `mlite_veronisa_feedback`
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+=======
+    'description'   =>  'Modul Verifikasi Obat Kronis',
+    'author'        =>  'Basoro',
+    'version'       =>  '1.0',
+    'compatibility' =>  '4.0.*',
+    'icon'          =>  'medkit',
+    'install'       =>  function () use ($core) {
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'username', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'password', '')");
@@ -46,5 +55,9 @@ return [
     },
     'uninstall'     =>  function() use($core)
     {
+<<<<<<< HEAD
+=======
+      $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'veronisa'");
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     }
 ];

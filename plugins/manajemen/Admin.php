@@ -235,7 +235,7 @@ class Admin extends AdminModule
             ->where ('keterangan', '!=' , '-')
           	->where('jam_datang', '>=', date('Y-m-d').' 00:00:00')
             ->oneArray();
-        echo $record;
+        //echo $record;
         return $record['count'];
     }
 
@@ -1016,7 +1016,7 @@ class Admin extends AdminModule
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
         $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
         $settings = htmlspecialchars_array($this->settings('manajemen'));
-        $stats['poliChart'] = $this->countResepDr(); 
+        $stats['poliChart'] = $this->countResepDr();
         return $this->draw('apotek.html',[
             'settings' => $settings,
             'stats' => $stats,
@@ -1065,8 +1065,8 @@ class Admin extends AdminModule
 
   	public function presensiChart($days = 14, $offset = 0)
     {
-        $time = strtotime(date("Y-m-d", strtotime("-".$days + $offset." days")));
-        $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
+        $time = strtotime(date("Y-m-d", strtotime("-".($days + $offset)." days")));
+        $date = date("Y-m-d", strtotime("-".($days + $offset)." days"));
 
         $query = $this->db()->pdo()->prepare("SELECT COUNT(photo) as count,COUNT(IF(keterangan != '-', 1, NULL)) as count2, date(jam_datang) as jam FROM `rekap_presensi` WHERE jam_datang >= '$date 00:00:00' GROUP BY jam");
         $query->execute();
@@ -1103,7 +1103,7 @@ class Admin extends AdminModule
 
     public function getCoba($days = 14, $offset = 0)
     {
-      $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
+      $date = date("Y-m-d", strtotime("-".($days + $offset)." days"));
 
       $query = $this->db('rekap_presensi')
           ->select([
@@ -1120,7 +1120,7 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-        $this->assign['penjab'] = $this->core->db('penjab')->toArray();
+        $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['manajemen'] = htmlspecialchars_array($this->settings('manajemen'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }

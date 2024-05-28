@@ -4,6 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
+
 class Pendidikan
 {
 
@@ -40,8 +41,8 @@ class Pendidikan
           $return['form'] = [
             'tingkat' => '',
             'indek' => '',
-	          'gapok1' => '', 
-            'kenaikan' => '', 
+	          'gapok1' => '',
+            'kenaikan' => '',
             'maksimal' => ''
           ];
         }

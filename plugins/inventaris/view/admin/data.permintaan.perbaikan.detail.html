@@ -19,9 +19,14 @@
           <tr>
             <th>No. Permintaan</th>
             <th>No. Inventaris</th>
+<<<<<<< HEAD
             <th>Aset</th>
             <th>Pemohon Perbaikan</th>
             <th>Tanggal Perbaikan</th>
+=======
+            <th>Pemohon Perbaikan</th>
+            <th>Tanggal</th>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
             <th>Deskripsi Kerusakan</th>
           </tr>
         </thead>
@@ -29,21 +34,32 @@
           <tr>
             <td>{$permintaan_perbaikan_inventaris.no_permintaan}</td>
             <td>{$permintaan_perbaikan_inventaris.no_inventaris}</td>
+<<<<<<< HEAD
             <td>{$permintaan_perbaikan_inventaris.nama_barang} [{$permintaan_perbaikan_inventaris.nama_merk}] - {$permintaan_perbaikan_inventaris.nama_ruang}</td>
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
             <td>{$permintaan_perbaikan_inventaris.nik} - {$permintaan_perbaikan_inventaris.nama}</td>
             <td>{$permintaan_perbaikan_inventaris.tanggal}</td>
             <td>{$permintaan_perbaikan_inventaris.deskripsi_kerusakan}</td>
           </tr>
           {if: $perbaikandetail}
             <tr>
+<<<<<<< HEAD
               <td colspan="6"><button type="button" class="btn btn-success">Sudah Tindak Lanjut</button></td>
+=======
+              <td colspan="5"><button type="button" class="btn btn-success">Sudah Tindak Lanjut</button></td>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
             </tr>
             <tr>
               <td></td>
               <td>
                 Tanggal Perbaikan
               </td>
+<<<<<<< HEAD
               <td colspan="4">
+=======
+              <td colspan="3">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 {$perbaikandetail.tanggal}
               </td>
             </tr>
@@ -52,7 +68,11 @@
               <td>
                 Status
               </td>
+<<<<<<< HEAD
               <td colspan="4">
+=======
+              <td colspan="3">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 {$perbaikandetail.status}
               </td>
             </tr>
@@ -61,7 +81,11 @@
               <td>
                 Uraian Kegiatan
               </td>
+<<<<<<< HEAD
               <td colspan="4">
+=======
+              <td colspan="3">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 {$perbaikandetail.uraian_kegiatan}
               </td>
             </tr>
@@ -70,7 +94,11 @@
               <td>
                 Petugas
               </td>
+<<<<<<< HEAD
               <td colspan="4">
+=======
+              <td colspan="3">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 {$perbaikandetail.nip} - {$perbaikandetail.nama}
               </td>
             </tr>
@@ -79,7 +107,11 @@
               <td>
                 Pelaksana
               </td>
+<<<<<<< HEAD
               <td colspan="4">
+=======
+              <td colspan="3">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 {$perbaikandetail.pelaksana}
               </td>
             </tr>
@@ -88,13 +120,21 @@
               <td>
                 Keterangan
               </td>
+<<<<<<< HEAD
               <td colspan="4">
+=======
+              <td colspan="3">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 {$perbaikandetail.keterangan}
               </td>
             </tr>
           {else}
           <tr>
+<<<<<<< HEAD
             <td colspan="6"><button type="button" class="btn btn-danger">Belum Tindak Lanjut</button></td>
+=======
+            <td colspan="5"><button type="button" class="btn btn-danger">Belum Tindak Lanjut</button></td>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           </tr>
           {/if}
         </tbody>

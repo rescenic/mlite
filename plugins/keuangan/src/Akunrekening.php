@@ -7,11 +7,6 @@ use Systems\Lib\QueryWrapper;
 class Akunrekening
 {
 
-    protected function db($table)
-    {
-        return new QueryWrapper($table);
-    }
-
     public function getIndex()
     {
 
@@ -62,6 +57,11 @@ class Akunrekening
     public function postHapus()
     {
       return $this->db('mlite_rekening')->where('kd_rek', $_POST['kd_rek'])->delete();
+    }
+
+    protected function db($table)
+    {
+        return new QueryWrapper($table);
     }
 
 }

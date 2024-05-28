@@ -4,9 +4,12 @@ namespace Plugins\Utd;
 
 use Systems\AdminModule;
 use Plugins\Utd\DB_Wilayah;
+<<<<<<< HEAD
 use Systems\Lib\Fpdf\FPDF;
 use Systems\Lib\Fpdf\PDF_MC_Table;
 use Systems\Lib\Fpdf\PDF_Code128;
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
 class Admin extends AdminModule
 {
@@ -53,6 +56,7 @@ class Admin extends AdminModule
   public function postSavePendonor()
   {
     if($_POST['simpan']) {
+<<<<<<< HEAD
       $cek_nik = $this->db('utd_pendonor')->where('no_ktp', $_POST['no_ktp'])->oneArray();
       if ($cek_nik) {
         $this->notify('failure', 'Maaf, data pendonor sudah tersedia..!!');
@@ -62,6 +66,9 @@ class Admin extends AdminModule
       
       unset($_POST['simpan']);
 
+=======
+      unset($_POST['simpan']);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       if(!$this->db('propinsi')->where('kd_prop', $_POST['kd_prop'])->oneArray()){
         $this->db('propinsi')->save(['kd_prop' => $_POST['kd_prop'], 'nm_prop' => $_POST['nm_prop']]);
       }
@@ -80,9 +87,12 @@ class Admin extends AdminModule
       unset($_POST['nm_kab']);
       unset($_POST['nm_kec']);
       unset($_POST['nm_kel']);
+<<<<<<< HEAD
       $_POST['nama'] = strtoupper($_POST['nama']); 
       $_POST['tmp_lahir'] = strtoupper($_POST['tmp_lahir']);
       $_POST['alamat'] = strtoupper($_POST['alamat']); 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       $this->db('utd_pendonor')->save($_POST);
       $this->notify('success', 'Data pendonor telah disimpan');
     } else if ($_POST['update']) {
@@ -107,9 +117,12 @@ class Admin extends AdminModule
       unset($_POST['nm_kab']);
       unset($_POST['nm_kec']);
       unset($_POST['nm_kel']);
+<<<<<<< HEAD
       $_POST['nama'] = strtoupper($_POST['nama']); 
       $_POST['tmp_lahir'] = strtoupper($_POST['tmp_lahir']);
       $_POST['alamat'] = strtoupper($_POST['alamat']); 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       $this->db('utd_pendonor')
         ->where('no_pendonor', $no_pendonor)
         ->save($_POST);
@@ -118,6 +131,7 @@ class Admin extends AdminModule
     redirect(url([ADMIN, 'utd', 'pendonor']));
   }
 
+<<<<<<< HEAD
 //   public function postSavePendonor()
 // {
 //   if ($_POST['simpan']) {
@@ -192,6 +206,8 @@ class Admin extends AdminModule
 // }
 
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   public function getHapusPendonor($no_pendonor)
   {
     $this->db('utd_pendonor')
@@ -224,11 +240,18 @@ class Admin extends AdminModule
     FROM `utd_pendonor`
     WHERE (`no_pendonor` LIKE '%$cari%' OR `nama` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
     ");
+<<<<<<< HEAD
+=======
+
+    $cetak = $this->db('mlite_temporary')->toArray();
+    return $this->draw('cetak.utd.html', ['cetak' => $cetak]);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     exit();
   }
 
   public function getCetakPendonor()
   {
+<<<<<<< HEAD
     $tmp = $this->db('mlite_temporary')->toArray();
     $logo = $this->settings->get('settings.logo');
 
@@ -289,12 +312,37 @@ class Admin extends AdminModule
 
     $date = date('Y-m-d');
 
+=======
+    $mpdf = new \Mpdf\Mpdf([
+      'mode' => 'utf-8',
+      'orientation' => 'L'
+    ]);
+
+    $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+    $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+          
+    $url = url('admin/tmp/cetak.utd.html');
+    $html = file_get_contents($url);
+    $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+    $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+
+    // Output a PDF file directly to the browser
+    $mpdf->Output();
+    exit();      
+
+  }
+
+  public function getDonor()
+  {
+    $this->_addHeaderFiles();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $donor = $this->db('utd_donor')
       ->join('utd_pendonor', 'utd_pendonor.no_pendonor=utd_donor.no_pendonor')
       ->join('kelurahan', 'kelurahan.kd_kel=utd_pendonor.kd_kel')
       ->join('kecamatan', 'kecamatan.kd_kec=utd_pendonor.kd_kec')
       ->join('kabupaten', 'kabupaten.kd_kab=utd_pendonor.kd_kab')
       ->join('propinsi', 'propinsi.kd_prop=utd_pendonor.kd_prop')
+<<<<<<< HEAD
       ->where('utd_donor.tanggal', $date)
       ->toArray();
     $pendonor = $this->db('utd_pendonor')->toArray();
@@ -560,6 +608,31 @@ public function postSaveDonor()
   //   }
   //   redirect(url([ADMIN, 'utd', 'donor']));
   // }
+=======
+      ->toArray();
+    $pendonor = $this->db('utd_pendonor')->toArray();
+    $petugas = $this->db('petugas')->toArray();
+    return $this->draw('data.donor.html', ['donor' => $donor, 'pendonor' => $pendonor, 'petugas' => $petugas]);
+  }
+
+  public function postSaveDonor()
+  {
+    if($_POST['simpan']) {
+      unset($_POST['simpan']);
+      $this->db('utd_donor')->save($_POST);
+      $this->notify('success', 'Data donor telah disimpan');
+    } else if ($_POST['update']) {
+      $no_donor = $_POST['no_donor'];
+      unset($_POST['update']);
+      unset($_POST['no_donor']);
+      $this->db('utd_donor')
+        ->where('no_donor', $no_donor)
+        ->save($_POST);
+      $this->notify('failure', 'Data donor telah diubah');
+    }
+    redirect(url([ADMIN, 'utd', 'donor']));
+  }
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
   public function getHapusDonor($no_donor)
   {
@@ -572,16 +645,23 @@ public function postSaveDonor()
   public function getStokDarah()
   {
     $this->_addHeaderFiles();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     $stokdarah = $this->db('utd_stok_darah')
       ->join('utd_komponen_darah', 'utd_komponen_darah.kode=utd_stok_darah.kode_komponen')
       ->toArray();
     $komponendarah = $this->db('utd_komponen_darah')->toArray();
+<<<<<<< HEAD
     $donor = $this->db('utd_donor')->join('utd_pendonor', 'utd_pendonor.no_pendonor=utd_donor.no_pendonor')->where('utd_donor.tanggal', date('Y-m-d'))->toArray();
     return $this->draw('stok.darah.html', [
       'stokdarah' => $stokdarah, 
       'komponendarah' => $komponendarah,
       'donor' => $donor,]);
+=======
+    return $this->draw('stok.darah.html', ['stokdarah' => $stokdarah, 'komponendarah' => $komponendarah]);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   }
 
   public function postSaveStokDarah()
@@ -610,6 +690,7 @@ public function postSaveDonor()
     redirect(url([ADMIN, 'utd', 'stokdarah']));
   }
 
+<<<<<<< HEAD
 //   public function postlama()
 // {
 //     $kodeKomponen = $_POST['kode_komponen'];
@@ -667,6 +748,9 @@ public function postlama()
   // }
 
    public function getKomponenDarah()
+=======
+  public function getKomponenDarah()
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   {
     $this->_addHeaderFiles();
     $komponendarah = $this->db('utd_komponen_darah')
@@ -710,7 +794,11 @@ public function postlama()
         if(isset($_POST["query"])){
           $output = '';
           $key = "%".$_POST["query"]."%";
+<<<<<<< HEAD
           $rows = $this->db('propinsi')->like('nm_prop', $key)->asc('kd_prop')->limit(10)->toArray();
+=======
+          $rows = $this->data_wilayah('propinsi')->like('nm_prop', $key)->asc('kd_prop')->limit(10)->toArray();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           $output = '';
           if(count($rows)){
             foreach ($rows as $row) {
@@ -724,7 +812,11 @@ public function postlama()
         if(isset($_POST["query"])){
           $output = '';
           $key = "%".$_POST["query"]."%";
+<<<<<<< HEAD
           $rows = $this->db('kabupaten')->like('nm_kab', $key)->asc('kd_kab')->limit(10)->toArray();
+=======
+          $rows = $this->data_wilayah('kabupaten')->like('nm_kab', $key)->asc('kd_kab')->limit(10)->toArray();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           $output = '';
           if(count($rows)){
             foreach ($rows as $row) {
@@ -738,7 +830,11 @@ public function postlama()
         if(isset($_POST["query"])){
           $output = '';
           $key = "%".$_POST["query"]."%";
+<<<<<<< HEAD
           $rows = $this->db('kecamatan')->like('nm_kec', $key)->asc('kd_kec')->limit(10)->toArray();
+=======
+          $rows = $this->data_wilayah('kecamatan')->like('nm_kec', $key)->asc('kd_kec')->limit(10)->toArray();
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           $output = '';
           if(count($rows)){
             foreach ($rows as $row) {
@@ -766,6 +862,7 @@ public function postlama()
     exit();
   }
 
+<<<<<<< HEAD
     public function getKartuDonor($no_pendonor)
   {
       $data_pendonor = $this->db('utd_pendonor')->where('no_pendonor', $no_pendonor)->toArray();
@@ -805,6 +902,20 @@ public function postlama()
   //     $pdf->Output('kartudonor_'.$no_pendonor.'.pdf','I');
   // }
 
+=======
+  public function getKartuDonor($no_pendonor)
+  {
+      $pdf=new PDF_Code128('L', 'mm', array(59,98));
+      $pdf->AddPage();
+      $pdf->SetFont('Arial','',10);
+      $pdf->Code128(9,35,$no_pendonor,80,20);
+      $pdf->SetFont('Arial','B',16);
+      $pdf->SetXY(8,0);
+      $pdf->Cell(0,35,$no_pendonor);
+      $pdf->Output('kartudonor_'.$no_pendonor.'.pdf','I');
+  }
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   public function setNoPendonor()
   {
       $date = date('Y-m-d');
@@ -815,11 +926,16 @@ public function postlama()
         $last_no[0] = '000000';
       }
       $next_no = sprintf('%06s', ($last_no[0] + 1));
+<<<<<<< HEAD
       $next_no = 'DO'.$next_no;
+=======
+      $next_no = 'UTD'.$next_no;
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
       return $next_no;
   }
 
+<<<<<<< HEAD
     public function setNoDonor()
   {
       $date = date('Y-m-d');
@@ -850,6 +966,8 @@ public function postlama()
   //     return $next_no;
   // }
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   public function getCss()
   {
       header('Content-type: text/css');
@@ -866,6 +984,7 @@ public function postlama()
 
   private function _addHeaderFiles()
   {
+<<<<<<< HEAD
       // CSS
       $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
       $this->core->addCSS(url('assets/css/jquery-ui.css'));
@@ -878,14 +997,29 @@ public function postlama()
       $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
       $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
       $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
+=======
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+      $this->core->addCSS(url([ADMIN, 'utd', 'css']));
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+      $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
       $this->core->addJS(url('assets/jscripts/jquery.confirm.js'));
       $this->core->addJS(url([ADMIN, 'utd', 'javascript']), 'footer');
   }
 
+<<<<<<< HEAD
    protected function data_wilayah($table)
     {
         return new DB_Wilayah($table);
     }
+=======
+  protected function data_wilayah($table)
+  {
+      return new DB_Wilayah($table);
+  }
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
 }

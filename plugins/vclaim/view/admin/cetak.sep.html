@@ -91,8 +91,12 @@
               </td>
               <td width="580">
                 <center>
+<<<<<<< HEAD
                   <img src="{?=url()?}/systems/lib/Barcode.php?codetype=code39&size=60&text={$data_sep.no_sep}" alt=""
                     width="200px">
+=======
+                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={$data_sep.no_sep}" alt="" width="200px">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 </center>
               </td>
             </tr>
@@ -327,7 +331,7 @@
                 :
               </td>
               <td width="550" valign="top">
-                -
+                {$data_sep.catatan}
               </td>
               <td width="200" halign="center" valign="bottom">
                 Pasien/Keluarga Pasien
@@ -351,7 +355,11 @@
               <td valign="bottom" halign="center" padding="0" margin="0">
                 <center>
                   <!-- <div id="qrcodeSEP" style="margin-top:2px;width:50px;"></div><br> -->
+<<<<<<< HEAD
                   <img src="{$data_sep.qrCode}" width="100px" style="margin: 0.2em;" /><br>
+=======
+                  <img src="{?=url($data_sep.qrCode)?}" width="100px" style="margin: 0.2em;"/><br>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                   {$data_sep.nama_pasien}<br>
                 </center>
                 -----------------------------------
@@ -367,6 +375,7 @@
     <button class="cetak" onclick="printContent('cetaksep')" type="button">Cetak SEP</button>
   </center>
   {else}
+<<<<<<< HEAD
   <center>
     <div class="alert alert-danger" id="sync">
       Data SEP <span id="no_sep">{?=parseURL()[2]?}</span> di server SIMRS tidak ditemukan.<br>
@@ -522,6 +531,109 @@
         } else {
           alert(json_obj[0].metaData.message);
         }
+=======
+
+  <script src="{?=url()?}/assets/jscripts/jquery.min.js?v=4.0.3"></script>
+  <script src="{?=url()?}/assets/jscripts/bootstrap.min.js?v=4.0.3"></script>  
+  <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap-datetimepicker.css">
+  <script src="{?=url()?}/assets/jscripts/moment-with-locales.js"></script>
+  <script src="{?=url()?}/assets/jscripts/bootstrap-datetimepicker.js"></script>  
+    <center>
+      <div class="alert alert-danger" id="sync">
+        Data SEP <span id="no_sep">{?=parseURL()[2]?}</span> di server SIMRS tidak ditemukan.<br>
+        Apakah akan menarik data dari v-Claim?<br>
+        Jika YA silahkan isikan form dibawah, kemudian klik tombol Simpan ke SIMRS<br>
+        <!-- <button class="btn" type="button" id="syncsep">Ya</button> -->
+        <button class="btn" type="button" onclick="javascript:window.close();opener.window.focus();">TUTUP</button>
+      </div>
+    </center>
+    <div class="container" id="form_tarik_sep">
+      
+      <link href="{?=url()?}/assets/css/ataaka.min.css" rel="stylesheet">
+
+      <form name="vedika" action="{?=url(ADMIN.'/vclaim/syncsep/')?}" method="POST" enctype="multipart/form-data">
+        <div class="col-md-12">
+          <div class="form-group">
+              <label>Nomor Rawat</label>
+              <input type="text" name="no_rawat" class="form-control" value="{?=revertNoRawat(parseUrl()[3])?}" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Nomor SEP</label>
+              <input type="text" name="no_sep" class="form-control" placeholder="Nomor SEP" required value="{?=parseUrl()[2]?}" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Asal Rujukan</label>
+              <select name="asal_rujukan" class="form-control">
+                  <option value="1">Faskes 1</option>
+                  <option value="2">Faskes 2</option>
+              </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Tanggal Rujukan</label>
+              <input type="text" name="tgl_kunjungan" class="form-control tanggal" placeholder="Tanggal Rujukan" required value="" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Kode Diagnosa</label>
+              <input type="text" name="kd_diagnosa" class="form-control" placeholder="Kode ICD-X" required value="" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Poli Tujuan</label>
+              <select name="kd_poli" class="form-control" data-use-search="true">
+                  {loop: $poliklinik}
+                  <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                  {/loop}
+              </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Dokter Penanggung Jawab</label>
+              <select name="kd_dokter" class="form-control">
+                  {loop: $dokter}
+                  <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                  {/loop}
+              </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Simpan Ke SIMRS" />
+          </div>
+        </div>
+      </form>      
+    </div>
+    <!-- <center style="margin-top:100px;">
+      <button class="tutup" type="button" onclick="javascript:window.close();opener.window.focus();">Tutup Window</button>
+      <button class="cetak" onclick="printContent('cetaksep')" type="button">Cetak SEP</button>
+    </center> -->
+
+    <script type="text/javascript">
+      $('.tanggal').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+    </script>
+    
+    {/if}
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+    <script>
+      jQuery('#qrcodeSEP').qrcode({
+        text	: "No.SEP: {$data_sep.no_sep}",
+        width : 80,
+        height: 80
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       });
     });
   </script>

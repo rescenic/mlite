@@ -17,11 +17,18 @@
                     <input type="text" name="tlp" class="form-control" value="" required />
                 </div>
                 <div class="form-group">
+<<<<<<< HEAD
                     <label>Aset/Barang</label>
                     <select name="no_inventaris" id="no_inventaris" class="form-control" data-use-search="true">
                         {loop: $inventaris}
                         <option value="{$value.no_inventaris}"  data-subtitle="{$value.nama_ruang}" data-right="{$value.nama_merk}">{$value.nama_barang}</option>
                         <!-- <option value="{$value.no_inventaris}">{$value.nama_barang} [{$value.nama_merk}] - {$value.nama_ruang}</option> -->
+=======
+                    <label>Nomor Inventaris</label>
+                    <select name="no_inventaris" id="no_inventaris" class="form-control" data-use-search="true">
+                        {loop: $inventaris}
+                        <option value="{$value.no_inventaris}">{$value.nama_barang}</option>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                         {/loop}
                     </select>
                 </div>
@@ -116,11 +123,19 @@
 <script type="text/javascript">
   $("#peminjaman").on("click", ".peminjaman", function(event){
     var peminjam  = $(this).attr("data-peminjam");
+<<<<<<< HEAD
     var tlp       = $(this).attr("data-tlp");
     var no_inventaris  = $(this).attr("data-no_inventaris");
     var tgl_pinjam     = $(this).attr("data-tgl_pinjam");
     var tgl_kembali    = $(this).attr("data-tgl_kembali");
     var nip            = $(this).attr("data-nip");
+=======
+    var tlp  = $(this).attr("data-tlp");
+    var no_inventaris  = $(this).attr("data-no_inventaris");
+    var tgl_pinjam  = $(this).attr("data-tgl_pinjam");
+    var tgl_kembali  = $(this).attr("data-tgl_kembali");
+    var nip  = $(this).attr("data-nip");
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     var status_pinjam  = $(this).attr("data-status_pinjam");
     $('input:text[name=peminjam]').val(peminjam);
     $('input:text[name=tlp]').val(tlp);
@@ -131,6 +146,9 @@
     $('#status_pinjam').val(status_pinjam).change();
     $('input:text[name=peminjam]').prop('readonly', true);
     $('input:text[name=tgl_pinjam]').prop('readonly', true);
+<<<<<<< HEAD
     // $('#no_inventaris').prop('readonly', true);
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   });
 </script>

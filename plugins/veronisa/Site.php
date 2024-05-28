@@ -8,6 +8,12 @@ use Systems\Lib\QRCode;
 class Site extends SiteModule
 {
 
+<<<<<<< HEAD
+=======
+    protected $mlite;
+    protected $assign;
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     public function init()
     {
         $this->mlite['notify']         = $this->core->getNotify();
@@ -42,8 +48,13 @@ class Site extends SiteModule
     {
         if ($this->_loginCheck()) {
             $page = [
+<<<<<<< HEAD
                 'title' => 'VERO',
                 'desc' => 'Dashboard Verifikasi Obat Kronis RSUD H. Damanhuri',
+=======
+                'title' => 'Veronisa',
+                'desc' => 'Dashboard Verifikasi Obat Kronis Aura Syifa',
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 'content' => $this->_getManage()
             ];
             if(isset($_POST['perbaiki'])) {
@@ -73,8 +84,13 @@ class Site extends SiteModule
                 redirect(url(['vero', '']));
             }
             $page = [
+<<<<<<< HEAD
                 'title' => 'VERO',
                 'desc' => 'Dashboard Verifikasi Obat Kronis RSUD H. Damanhuri',
+=======
+                'title' => 'Veronisa',
+                'desc' => 'Dashboard Verifikasi Obat Kronis Aura Syifa',
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 'content' => $this->draw('login.html', ['mlite' => $this->mlite])
             ];
         }
@@ -104,8 +120,13 @@ class Site extends SiteModule
       }
 
       // pagination
+<<<<<<< HEAD
       $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
       $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+=======
+      $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ? OR mlite_veronisa.nosep LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
+      $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       $totalRecords = $totalRecords->fetchAll();
 
       $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['vero', 'index', '%d/?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]));
@@ -113,8 +134,13 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
+<<<<<<< HEAD
       $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, mlite_veronisa.no_rawat, mlite_veronisa.nosep FROM reg_periksa, pasien, dokter, poliklinik, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
       $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+=======
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, mlite_veronisa.no_rawat, mlite_veronisa.nosep FROM reg_periksa, pasien, dokter, poliklinik, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ? OR mlite_veronisa.nosep LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
+      $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       $rows = $query->fetchAll();
 
       $this->assign['list'] = [];
@@ -125,6 +151,7 @@ class Site extends SiteModule
                 ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
                 ->asc('master_berkas_digital.nama')
                 ->toArray();
+<<<<<<< HEAD
               $galleri_pasien = $this->db('mlite_pasien_galleries_items')
                 ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
                 ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
@@ -146,6 +173,11 @@ class Site extends SiteModule
               $row = htmlspecialchars_array($row);
               $row['berkas_digital'] = $berkas_digital;
               $row['berkas_digital_pasien'] = $berkas_digital_pasien;
+=======
+
+              $row = htmlspecialchars_array($row);
+              $row['berkas_digital'] = $berkas_digital;
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               $row['catatanURL'] = url(['vero', 'catatan', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
               $row['status_pengajuan'] = $this->db('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['pdfURL'] = url(['vero', 'pdf', $this->convertNorawat($row['no_rawat'])]);
@@ -187,6 +219,7 @@ class Site extends SiteModule
           ->asc('master_berkas_digital.nama')
           ->toArray();
 
+<<<<<<< HEAD
         $galleri_pasien = $this->db('mlite_pasien_galleries_items')
           ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
           ->where('mlite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
@@ -220,6 +253,9 @@ class Site extends SiteModule
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
         $this->tpl->set('billing', $rows);
+=======
+        $no_rawat = $this->revertNorawat($id);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
         /** Billing versi mlite */
 
@@ -313,6 +349,7 @@ class Site extends SiteModule
           $total_periksa_radiologi += $row['biaya'];
         }
 
+<<<<<<< HEAD
         $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
           ->where('status', 'ralan')
           ->where('no_rawat', $no_rawat)
@@ -323,6 +360,8 @@ class Site extends SiteModule
           $total_tambahan_biaya += $row['besar_biaya'];
         }
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $jumlah_total_operasi = 0;
         $operasis = $this->db('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $no_rawat)->where('operasi.status', 'Ralan')->toArray();
         $result_detail['operasi'] = [];
@@ -347,7 +386,11 @@ class Site extends SiteModule
         imagedestroy($im);
 
         $image = BASE_DIR."/tmp/qrcode.png";
+<<<<<<< HEAD
         $qrCode = "../../tmp/qrcode.png";
+=======
+        $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
         $this->tpl->set('billing_mlite_detail', $result_detail);
         $this->tpl->set('billing_mlite', $billing_result);
@@ -369,13 +412,23 @@ class Site extends SiteModule
 
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
         $this->tpl->set('print_sep', $print_sep);
+<<<<<<< HEAD
         
+=======
+
+        /*
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $resume_pasien = $this->db('resume_pasien')
           ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $this->tpl->set('resume_pasien', $resume_pasien);
+<<<<<<< HEAD
         
+=======
+        */
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $pasien = $this->db('pasien')
           ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
           ->join('kabupaten', 'kabupaten.kd_kab = pasien.kd_kab')
@@ -544,7 +597,10 @@ class Site extends SiteModule
         $this->tpl->set('riwayat_obat', $riwayat_obat);
 
         $this->tpl->set('berkas_digital', $berkas_digital);
+<<<<<<< HEAD
         $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->oneArray());
         $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));
@@ -563,6 +619,7 @@ class Site extends SiteModule
           ->asc('master_berkas_digital.nama')
           ->toArray();
 
+<<<<<<< HEAD
         $galleri_pasien = $this->db('mlite_pasien_galleries_items')
           ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
           ->where('mlite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
@@ -596,6 +653,9 @@ class Site extends SiteModule
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
         $this->tpl->set('billing', $rows);
+=======
+        $no_rawat = $this->revertNorawat($id);
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
         /** Billing versi mlite */
 
@@ -689,6 +749,7 @@ class Site extends SiteModule
           $total_periksa_radiologi += $row['biaya'];
         }
 
+<<<<<<< HEAD
         $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
           ->where('status', 'ralan')
           ->where('no_rawat', $no_rawat)
@@ -699,6 +760,8 @@ class Site extends SiteModule
           $total_tambahan_biaya += $row['besar_biaya'];
         }
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $jumlah_total_operasi = 0;
         $operasis = $this->db('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $no_rawat)->where('operasi.status', 'Ralan')->toArray();
         $result_detail['operasi'] = [];
@@ -723,7 +786,11 @@ class Site extends SiteModule
         imagedestroy($im);
 
         $image = BASE_DIR."/tmp/qrcode.png";
+<<<<<<< HEAD
         $qrCode = "../../tmp/qrcode.png";
+=======
+        $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
         $this->tpl->set('billing_mlite_detail', $result_detail);
         $this->tpl->set('billing_mlite', $billing_result);
@@ -746,13 +813,21 @@ class Site extends SiteModule
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
         $this->tpl->set('print_sep', $print_sep);
 
+<<<<<<< HEAD
         
+=======
+        /*
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $resume_pasien = $this->db('resume_pasien')
           ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $this->tpl->set('resume_pasien', $resume_pasien);
+<<<<<<< HEAD
         
+=======
+        */
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
         $pasien = $this->db('pasien')
           ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
@@ -922,7 +997,10 @@ class Site extends SiteModule
         $this->tpl->set('riwayat_obat', $riwayat_obat);
 
         $this->tpl->set('berkas_digital', $berkas_digital);
+<<<<<<< HEAD
         $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->oneArray());
         $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));
@@ -963,6 +1041,7 @@ class Site extends SiteModule
 
     private function _login($username, $password)
     {
+<<<<<<< HEAD
         // Check attempt
         $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
@@ -974,6 +1053,8 @@ class Site extends SiteModule
             $attempt['attempts'] = intval($attempt['attempts']);
             $attempt['expires'] = intval($attempt['expires']);
         }
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
         $row_username = $this->settings->get('veronisa.username');
         $row_password = $this->settings->get('veronisa.password');
@@ -989,6 +1070,7 @@ class Site extends SiteModule
 
             return true;
         } else {
+<<<<<<< HEAD
             // Increase attempt
             $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
             $attempt['attempts'] += 1;
@@ -1002,6 +1084,9 @@ class Site extends SiteModule
             } else {
                 $this->core->setNotify('failure', 'Username atau password salah!');
             }
+=======
+            $this->core->setNotify('failure', 'Username atau password salah!');
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
             return false;
         }
@@ -1010,12 +1095,15 @@ class Site extends SiteModule
     private function _loginCheck()
     {
         if (isset($_SESSION['veronisa_user']) && isset($_SESSION['veronisa_token']) && isset($_SESSION['veronisa_userAgent']) && isset($_SESSION['veronisa_IPaddress'])) {
+<<<<<<< HEAD
             if ($_SESSION['veronisa_IPaddress'] != $_SERVER['REMOTE_ADDR']) {
                 return false;
             }
             if ($_SESSION['veronisa_userAgent'] != $_SERVER['HTTP_USER_AGENT']) {
                 return false;
             }
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
             if (empty(parseURL(1))) {
                 redirect(url('vero'));

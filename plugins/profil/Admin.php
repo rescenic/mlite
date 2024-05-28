@@ -32,13 +32,28 @@ class Admin extends AdminModule
             ['name' => 'Perbaikan Barang', 'url' => url([ADMIN, 'profil', 'permintaanperbaikan']), 'icon' => 'paperclip', 'desc' => 'Permohonan Perbaikan Barang'],
         ];
         $username = $this->core->getUserInfo('username', null, true);
-        $profil = $this->db('pegawai')->where('nik', $username)->oneArray();
+        $cek_profil = $this->db('pegawai')->where('nik', $username)->oneArray();
+        if(!$cek_profil) {
+          $profil['nama'] = 'Admin Utama';
+          $profil['nik'] = 'admin';
+        } else {
+          $profil['nama'] = $cek_profil['nama'];
+          $profil['nik'] = $cek_profil['nik'];
+        }
         $tanggal = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
-        $presensi = $this->db('rekap_presensi')->where('id', $profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
-        $absensi = $this->db('rekap_presensi')->where('id', $profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+        $presensi = [];
+        $absensi = [];
+        if($cek_profil) {
+          $presensi = [];
+          $absensi = [];
+          if($this->db('rekap_presensi')->where('id', $cek_profil['id'])->oneArray()){
+            $presensi = $this->db('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+            $absensi = $this->db('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+          }
+        }
         $fotoURL = url(MODULES . '/kepegawaian/img/default.png');
-        if (!empty($profil['photo'])) {
-            $fotoURL = WEBAPPS_URL . '/penggajian/' . $profil['photo'];
+        if (!empty($cek_profil['photo'])) {
+            $fotoURL = WEBAPPS_URL . '/penggajian/' . $cek_profil['photo'];
         }
         return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
     }
@@ -2173,6 +2188,7 @@ class Admin extends AdminModule
             }
         }
 
+        /*
         $year = date('Y');
         $month = date('m');
         // $day = cal_days_in_month(CAL_GREGORIAN, $month, $year);
@@ -2181,6 +2197,7 @@ class Admin extends AdminModule
         for ($i = 1; $i < $day + 1; $i++) {
             $i;
         }
+        */
 
         $this->assign['getStatus'] = isset($_GET['status']);
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
@@ -2523,6 +2540,7 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
+<<<<<<< HEAD
     public function postBridgingBkd()
     {
         $jadwal = 0;
@@ -3404,6 +3422,8 @@ class Admin extends AdminModule
       return $next_no_order;
   }
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     public function getJavascript()
     {
         header('Content-type: text/javascript');
@@ -3421,12 +3441,18 @@ class Admin extends AdminModule
     private function _addHeaderFiles()
     {
         // CSS
+<<<<<<< HEAD
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $this->core->addCSS(url('plugins/profil/css/admin/timeline.min.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
+<<<<<<< HEAD
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         $this->core->addJs(url('plugins/profil/js/admin/timeline.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
 
@@ -3438,4 +3464,5 @@ class Admin extends AdminModule
         $this->core->addJS(url([ADMIN, 'profil', 'javascript']), 'footer');
         $this->core->addCSS(url([ADMIN, 'profil', 'css']));
     }
+
 }

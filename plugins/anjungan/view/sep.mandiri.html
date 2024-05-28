@@ -152,17 +152,25 @@
       <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#antrian">
         <div class="card-body btn btn-lg btn-success">
           <ul class="list-unstyled mt-3 mb-4">
-            <span style="font-size: 100px; color: white;"><i class="fa fa-question"></i></span>
+            <span style="font-size: 100px; color: white;"><i class="fa fa-print"></i></span>
           </ul>
           <a href="#" style="text-decoration: none; color: white;"><h1 class="display-4">CETAK SEP</h1></a>
         </div>
       </div>
-      <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#daftar">
-        <div class="card-body btn btn-lg btn-primary">
+      <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#checkinmodal">
+        <div class="card-body btn btn-lg btn-danger">
           <ul class="list-unstyled mt-3 mb-4">
             <span style="font-size: 100px; color: white;"><i class="fa fa-vcard"></i></span>
           </ul>
           <h1 class="display-4">PENDAFTARAN</h1>
+        </div>
+      </div>
+      <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#daftarmodal">
+        <div class="card-body btn btn-lg btn-primary">
+          <ul class="list-unstyled mt-3 mb-4">
+            <span style="font-size: 100px; color: white;"><i class="fa fa-edit"></i></span>
+          </ul>
+          <h1 class="display-4">DAFTAR</h1>
         </div>
       </div>
     </div>
@@ -209,8 +217,8 @@
     </div>
   </div>
 
-  <!-- Modal Daftar -->
-  <div class="modal fade" id="daftar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <!-- Modal Checkin -->
+  <div class="modal fade" id="checkinmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -220,6 +228,7 @@
           </button>
         </div>
         <div class="modal-body">
+<<<<<<< HEAD
           <div class="container">
             <div class="card-deck mb-3 text-center">
               <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#baru" data-dismiss="modal">
@@ -238,6 +247,11 @@
                   <h1 class="display-4">SORE</h1>
                 </div>
               </div>
+=======
+        <div>
+            <div class="form-group">
+              <input type="text" class="form-control form-control-lg" id="nobooking" placeholder="Nomor Booking">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
             </div>
           </div>
         </div>
@@ -248,17 +262,27 @@
     </div>
   </div>
 
+<<<<<<< HEAD
   <div class="modal fade" id="baru" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <form class="form-signin" action="{?=url('anjungan/daftar/cek')?}" method="post">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalCenterTitle">Pendaftaran Poli Pagi</h5>
+=======
+  <!-- Modal Daftar -->
+  <div class="modal fade" id="daftarmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Pendaftaran Rawat Jalan BPJS</h5>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
+<<<<<<< HEAD
             <div class="form-group">
               <input type="text" name="no_rkm_medis" id="cek_norm" class="form-control form-control-lg text-black norm" placeholder="Nomor Kartu Berobat" required>
               <input type="hidden" name="status" value="pagi">
@@ -298,6 +322,18 @@
           </button>
         </div>
         </form>
+=======
+        <div>
+            <div class="form-group">
+              <input type="text" class="form-control form-control-lg" id="nik" placeholder="Nomor Induk Kependudukan / No KTP">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">Tutup</button>
+          <button type="submit" id="daftar" class="btn btn-lg btn-primary">Daftar</button>
+        </div>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       </div>
     </div>
   </div>
@@ -349,7 +385,7 @@
     });
   } );
   $(function() {
-      $('#norm')
+      $('#nik')
       .keyboard({
         layout: 'custom',
         customLayout: {
@@ -360,7 +396,7 @@
             '{accept} {cancel}'
           ]
         },
-        maxLength : 6,
+        maxLength : 16,
         // Prevent keys not in the displayed keyboard from being typed in
         restrictInput : true,
         // include lower case characters (added v1.25.7)
@@ -371,7 +407,7 @@
         acceptValid : true,
         validate : function(keyboard, value, isClosing){
           // only make valid if input is 6 characters in length
-          return value.length === 6;
+          return value.length === 16;
         }
       })
       //.addTyping();
@@ -436,6 +472,7 @@
   });
 
   $(function() {
+<<<<<<< HEAD
       $('#cek_nik')
       .keyboard({
         layout: 'custom',
@@ -461,15 +498,36 @@
           return value.length === 16;
         }
       })
+=======
+      $('#nobooking')
+      .keyboard()
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       //.addTyping();
   });
 
   </script>
   <script>
+<<<<<<< HEAD
   // $("#daftar").on("click","#checkin", function(event){
   //   alert('Terima kasih telah melakukan check in pendaftaran rawat jalan. Silahkan lakukan cetak mandiri Surat Eligibilitas Peserta (SEP) anda pada menu CETAK SEP.');
   //   $('#daftar').modal('hide');
   // });
+=======
+  $("#checkinmodal").on("click","#checkin", function(event){
+    var nobooking = $('#nobooking').val();
+    //alert('Terima kasih telah melakukan check in pendaftaran rawat jalan dengan nomor booking ' + nobooking + '. Silahkan lakukan cetak mandiri Surat Eligibilitas Peserta (SEP) anda pada menu CETAK SEP.');
+    $('#checkinmodal').modal('hide');
+    window.location.href = '{?=url()?}/anjungan/checkin/' + nobooking;
+    document.getElementById("nobooking").value = "";
+  });
+  $("#daftarmodal").on("click","#daftar", function(event){
+    var nik = $('#nik').val();
+    //alert('Terima kasih telah melakukan daftar pendaftaran rawat jalan.');
+    $('#daftarmodal').modal('hide');
+    window.location.href = '{?=url()?}/anjungan/daftar/' + nik;
+    document.getElementById("nik").value = "";
+  });
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   function loading(){
       $(".text").html("<i class='fa fa-spinner'></i> Loading ...");
   }

@@ -2,7 +2,7 @@
 Options -Indexes
 
 # Prevent visitors from viewing files directly
-<Files "\.(md|html|txt)$">
+<Files ~ "^.*\.(sdb|md|txt)$">
     <IfModule !mod_authz_core.c>
         Order allow,deny
         Deny from all
@@ -16,7 +16,11 @@ Options -Indexes
 # URL rewrites
 <IfModule mod_rewrite.c>
     RewriteEngine On
+<<<<<<< HEAD
     RewriteRule ^(themes/|tmp/).*\.(php|html)$ - [F,L]
+=======
+    RewriteRule ^(systems/|themes/|tmp/).*\.(php)$ - [F,L]
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [L]

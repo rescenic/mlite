@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div class="tabbable boxed parentTabs p-4">
     <ul class="nav nav-tabs">
         <li class="active">
@@ -175,6 +176,102 @@
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
+=======
+<div class="row" style="margin-bottom:20px;">
+    <form name="petugas" action="{?=url(ADMIN.'/profil/biodatasave/'.@$biodata.form.id)?}" method="POST" enctype="multipart/form-data">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$biodata.title}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Nama</label>
+                        <input type="text" name="nama" id="nama" class="form-control" value="{$biodata.form.nama}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Tinggal</label>
+                        <textarea name="alamat" class="form-control" rows="4">{$biodata.form.alamat}</textarea>
+                    </div>
+                    <div class="row clearfix">
+						<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tempat Lahir</label>
+                                <input type="text" name="tmp_lahir" class="form-control" value="{$biodata.form.tmp_lahir}"/>
+                            </div>
+						</div>
+						<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tanggal Lahir</label>
+                                <input type="text" name="tgl_lahir" class="form-control tanggal" value="{$biodata.form.tgl_lahir}"/>
+                            </div>
+						</div>
+					</div>
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Jenis Kelamin</label>
+                                <select name="jk" id="jk" class="form-control">
+                                  {loop: $biodata.jk}
+                                    <option value="{$value}"{if: $value == $biodata.form.jk} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Pendidikan</label>
+                                <select name="pendidikan" id="pendidikan" class="form-control">
+                                  {loop: $biodata.pendidikan}
+                                    <option value="{$value.tingkat}"{if: $value.tingkat == $biodata.form.pendidikan} selected{/if}>{$value.tingkat}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Departemen</label>
+                                <select name="departemen" id="departemen" class="form-control">
+                                  {loop: $biodata.departemen}
+                                    <option value="{$value.dep_id}"{if: $value.dep_id == $biodata.form.departemen} selected{/if}>{$value.nama}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+						</div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Bidang</label>
+                                <select name="bidang" id="bidang" class="form-control">
+                                  {loop: $biodata.bidang}
+                                    <option value="{$value.nama}"{if: $value.nama == $biodata.form.bidang} selected{/if}>{$value.nama}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                  <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Jabatan</label>
+                                <input type="text" name="jbtn" class="form-control" value="{$biodata.form.jbtn}"/>
+                            </div>
+						</div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Pangkat / Golongan</label>
+                                <select name="jnj_jabatan" id="jnj_jabatan" class="form-control">
+                                  {loop: $biodata.jnj_jabatan}
+                                    <option value="{$value.kode}"{if: $value.kode == $biodata.form.jnj_jabatan} selected{/if}>{$value.nama}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
                                             </div>
                                         </div>
@@ -539,6 +636,7 @@
                 </div>
             </div>
         </div>
+<<<<<<< HEAD
         <div class="tab-pane fade" id="biopeg">
             <div class="tabbable">
                 <ul class="nav nav-tabs">
@@ -3604,3 +3702,12 @@
 <script>
     $('select').selectator();
 </script>
+=======
+    </form>
+</div>
+<!-- {if: $petugas.form.nip !== ''}
+  <script>
+    $('#nip option:not(:selected)').remove();
+  </script>
+{/if} -->
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d

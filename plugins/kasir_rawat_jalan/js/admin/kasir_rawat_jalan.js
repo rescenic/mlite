@@ -164,26 +164,6 @@ $("#display").on("click", ".layanan_obat", function(event){
 });
 
 // ketika inputbox pencarian diisi
-$('input:text[name=tambahan_biaya]').on('input',function(e){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  var url    = baseURL + '/kasir_rawat_jalan/tambahanbiaya?t=' + mlite.token;
-  var tambahan_biaya = $('input:text[name=tambahan_biaya]').val();
-
-  if(tambahan_biaya!="") {
-      $.post(url, {tambahan_biaya: tambahan_biaya} ,function(data) {
-      // tampilkan data yang sudah di perbaharui
-        $("#tambahan_biaya").html(data).show();
-        $('#biaya').removeAttr("readonly");
-        $('#nm_perawatan').removeAttr("readonly");
-        $("#layanan").hide();
-        $("#obat").hide();
-      });
-  }
-
-});
-// end pencarian
-
-// ketika inputbox pencarian diisi
 $('input:text[name=layanan]').on('input',function(e){
   var baseURL = mlite.url + '/' + mlite.admin;
   var url    = baseURL + '/kasir_rawat_jalan/layanan?t=' + mlite.token;
@@ -266,26 +246,6 @@ $('input:text[name=radiologi]').on('input',function(e){
 
 });
 // end pencarian
-
-// ketika baris data diklik
-$("#tambahan_biaya").on("click", ".pilih_tambahan_biaya", function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-
-  var kd_jenis_prw = $(this).attr("data-nama_biaya");
-  var nm_perawatan = $(this).attr("data-nama_biaya");
-  var biaya = $(this).attr("data-besar_biaya");
-  var kat = $(this).attr("data-kat");
-
-  $('input:hidden[name=kd_jenis_prw]').val(kd_jenis_prw);
-  $('input:text[name=nm_perawatan]').val(nm_perawatan);
-  $('input:text[name=biaya]').val(biaya);
-  $('input:hidden[name=kat]').val(kat);
-
-  $("#tambahan_biaya").hide();
-  $('#provider').hide();
-  $('#aturan_pakai').hide();
-});
 
 // ketika baris data diklik
 $("#layanan").on("click", ".pilih_layanan", function(event){
@@ -394,7 +354,8 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
-
+  var jml_tindakan    = $('input:text[name=jml_tindakan]').val();
+  console.log(jml_tindakan);
   var url = baseURL + '/kasir_rawat_jalan/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
   kd_jenis_prw   : kd_jenis_prw,
@@ -407,8 +368,10 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
   kat            : kat,
-  jml            : jml
+  jml            : jml,
+  jml_tindakan   : jml_tindakan
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/kasir_rawat_jalan/rincian?t=' + mlite.token;
@@ -429,6 +392,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=nama_provider2]').val("");
     $('input:text[name=kode_provider]').val("");
     $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=jml_tindakan]').val(1);
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -590,38 +554,6 @@ $("#rincian").on("click",".hapus_radiologi", function(event){
   });
 });
 
-// ketika tombol hapus ditekan
-$("#rincian").on("click",".hapus_tambahan_biaya", function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-  var url = baseURL + '/kasir_rawat_jalan/hapustambahanbiaya?t=' + mlite.token;
-  var nama_biaya = $(this).attr("data-nama_biaya");
-  var no_rawat = $(this).attr("data-no_rawat");
-
-  // tampilkan dialog konfirmasi
-  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
-    // ketika ditekan tombol ok
-    if (result){
-      // mengirimkan perintah penghapusan
-      $.post(url, {
-        nama_biaya: nama_biaya,
-        no_rawat: no_rawat
-      } ,function(data) {
-        var url = baseURL + '/kasir_rawat_jalan/rincian?t=' + mlite.token;
-        $.post(url, {no_rawat : no_rawat,
-        }, function(data) {
-          // tampilkan data
-          $("#rincian").html(data).show();
-        });
-        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data tambahan biaya rawat jalan telah dihapus!"+
-        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-        "</div>").show();
-      });
-    }
-  });
-});
-
 // ketika inputbox potongan faktur diisi
 $("#rincian").on("input","#potongan_faktur2", function(event){
   event.preventDefault();
@@ -703,7 +635,6 @@ $("#rincian").on("click","#simpan_billing", function(event){
   var jurnal_obat_bhp           = $('#jurnal_obat_bhp').text();
   var jurnal_laboratorium            = $('#jurnal_laboratorium').text();
   var jurnal_radiologi            = $('#jurnal_radiologi').text();
-  var jurnal_tambahan_biaya            = $('#jurnal_tambahan_biaya').text();
   if 	(potongan_faktur == "" )
   {
     alert ("potongan belum diisi ");
@@ -737,7 +668,6 @@ $("#rincian").on("click","#simpan_billing", function(event){
         jurnal_obat_bhp : jurnal_obat_bhp,
         jurnal_laboratorium : jurnal_laboratorium,
         jurnal_radiologi : jurnal_radiologi,
-        jurnal_tambahan_biaya : jurnal_tambahan_biaya
         } ,function(data) {
           var url = baseURL + '/kasir_rawat_jalan/rincian?t=' + mlite.token;
           $.post(url, {no_rawat : no_rawat,
@@ -978,3 +908,12 @@ function terbilang(a){
 	}
 	return full.join(' ');
 }
+
+$("#form_rincian").on("click","#jam_billing", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/kasir_rawat_jalan/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_rincian #jam_billing").val(data);
+    });
+});

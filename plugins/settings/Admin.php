@@ -15,7 +15,6 @@ use Plugins\Settings\Inc\RecursiveDotFilterIterator;
 class Admin extends AdminModule
 {
     private $assign = [];
-    private $feed_url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
 
     public function init()
     {
@@ -29,7 +28,7 @@ class Admin extends AdminModule
         return [
             'Pengaturan'          => 'manage',
             'Umum'          => 'general',
-            //'Tema' => 'theme',
+            'Tema' => 'theme',
             'Pembaruan'          => 'updates',
         ];
     }
@@ -37,8 +36,8 @@ class Admin extends AdminModule
     public function getManage()
     {
       $sub_modules = [
-        ['name' => 'Pengaturan Umum', 'url' => url([ADMIN, 'settings', 'general']), 'icon' => 'wrench', 'desc' => 'Pengaturan umum KhanzaLITE'],
-        //['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
+        ['name' => 'Pengaturan Umum', 'url' => url([ADMIN, 'settings', 'general']), 'icon' => 'wrench', 'desc' => 'Pengaturan umum mLITE'],
+        ['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
         ['name' => 'Pembaruan Sistem', 'url' => url([ADMIN, 'settings', 'updates']), 'icon' => 'cubes', 'desc' => 'Pembaruan sistem'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -46,10 +45,13 @@ class Admin extends AdminModule
 
     public function getGeneral()
     {
+        $this->_addHeaderFiles();
         $settings = $this->settings('settings');
+        $settings['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
         $settings['module_rawat_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $settings['module_laboratorium'] = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
         $settings['module_radiologi'] = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
+        $settings['module_wagateway'] = $this->db('mlite_modules')->where('dir', 'wagateway')->oneArray();
         $settings['master'] = $this->db('mlite_modules')->where('dir', 'master')->oneArray();
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];
@@ -118,9 +120,23 @@ class Admin extends AdminModule
         } else {
           $logo = $this->settings->get('settings.logo');
         }
+
+        if (($_wallpaper = isset_or($_FILES['wallpaper']['tmp_name'], false))) {
+            $img = new \Systems\Lib\Image;
+
+            if ($img->load($_wallpaper)) {
+                $wallpaper_ = uniqid('wallpaper_');
+                $img->save(UPLOADS."/settings/".$wallpaper_.".".$img->getInfos('type'));
+                $wallpaper = "uploads/settings/".$wallpaper_.".".$img->getInfos('type');
+            }
+        } else {
+          $wallpaper = $this->settings->get('settings.wallpaper');
+        }
+
         $errors = 0;
 
         $_POST['logo'] = $logo;
+        $_POST['wallpaper'] = $wallpaper;
 
         foreach ($_POST as $field => $value) {
             if (!$this->db('mlite_settings')->where('module', 'settings')->where('field', $field)->save(['value' => $value])) {
@@ -130,7 +146,7 @@ class Admin extends AdminModule
 
         if (!$errors) {
 
-            $url = "https://basoro.org/datars/save";
+            $url = "https://mlite.id/datars/save";
             $curlHandle = curl_init();
             curl_setopt($curlHandle, CURLOPT_URL, $url);
             curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$_POST['nama_instansi']."&alamat_instansi=".$_POST['alamat']."&kabupaten=".$_POST['kota']."&propinsi=".$_POST['propinsi']."&kontak=".$_POST['nomor_telepon']."&email=".$_POST['email']);
@@ -138,6 +154,7 @@ class Admin extends AdminModule
             curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
             curl_setopt($curlHandle, CURLOPT_POST, 1);
+            curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
             curl_exec($curlHandle);
             curl_close($curlHandle);
 
@@ -222,10 +239,10 @@ class Admin extends AdminModule
     public function anyUpdates()
     {
         $this->tpl->set('allow_curl', intval(function_exists('curl_init')));
+        $settings = $this->settings('settings');
 
         if (isset($_POST['check'])) {
-
-            $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
+            $url = "https://api.github.com/repos/basoro/mlite/releases/latest";
             $opts = [
                 'http' => [
                     'method' => 'GET',
@@ -234,42 +251,27 @@ class Admin extends AdminModule
                     ]
                 ]
             ];
-
             $json = file_get_contents($url, false, stream_context_create($opts));
             $obj = json_decode($json, true);
-            $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
+    
+            $this->settings('settings', 'update_check', time());
 
             if (!is_array($obj)) {
                 $this->tpl->set('error', $obj);
             } else {
-                if(mb_strlen($this->settings->get('settings.version'), 'UTF-8') < 5) {
-                  $this->settings('settings', 'version', '2022-01-01 00:00:00');
-                }
-                $this->settings('settings', 'update_version', $new_date_format);
-                $this->settings('settings', 'update_changelog', $obj['commit']['message']);
+                $this->settings('settings', 'update_version', $obj['tag_name']);
+                $this->settings('settings', 'update_changelog', $obj['body']);
+                $this->tpl->set('update_version', $obj['tag_name']);
             }
         } elseif (isset($_POST['update'])) {
             if (!class_exists("ZipArchive")) {
-                $this->tpl->set('error', "ZipArchive is required to update Khanza LITE.");
+                $this->tpl->set('error', "ZipArchive is required to update mLITE.");
             }
 
             if (!isset($_GET['manual'])) {
-                $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
-                $opts = [
-                    'http' => [
-                        'method' => 'GET',
-                        'header' => [
-                                'User-Agent: PHP'
-                        ]
-                    ]
-                ];
-
-                $json = file_get_contents($url, false, stream_context_create($opts));
-                $obj = json_decode($json, true);
-                $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
-                $this->download('https://github.com/basoro/Khanza-Lite/archive/master.zip', BASE_DIR.'/tmp/latest.zip');
+                $this->download('https://github.com/basoro/mlite/archive/refs/tags/'.$this->settings->get('settings.update_version').'.zip', BASE_DIR.'/tmp/latest.zip');
             } else {
-                $package = glob(BASE_DIR.'/Khanza-Lite-master.zip');
+                $package = glob(BASE_DIR.'/mlite-*.zip');
                 if (!empty($package)) {
                     $package = array_shift($package);
                     $this->rcopy($package, BASE_DIR.'/tmp/latest.zip');
@@ -277,6 +279,7 @@ class Admin extends AdminModule
             }
 
             define("UPGRADABLE", true);
+
             // Making backup
             $backup_date = date('YmdHis');
             //$this->rcopy(BASE_DIR, BASE_DIR.'/backup/'.$backup_date.'/', 0755, [BASE_DIR.'/backup', BASE_DIR.'/tmp/latest.zip', (isset($package) ? BASE_DIR.'/'.basename($package) : '')]);
@@ -284,55 +287,57 @@ class Admin extends AdminModule
             $this->rcopy(BASE_DIR.'/plugins', BASE_DIR.'/backup/'.$backup_date.'/plugins');
             $this->rcopy(BASE_DIR.'/assets', BASE_DIR.'/backup/'.$backup_date.'/assets');
             $this->rcopy(BASE_DIR.'/themes', BASE_DIR.'/backup/'.$backup_date.'/themes');
-            $this->rcopy(BASE_DIR.'/vendor', BASE_DIR.'/backup/'.$backup_date.'/vendor');
             $this->rcopy(BASE_DIR.'/config.php', BASE_DIR.'/backup/'.$backup_date.'/config.php');
             $this->rcopy(BASE_DIR.'/manifest.json', BASE_DIR.'/backup/'.$backup_date.'/manifest.json');
 
             // Unzip latest update
-            $zip = new ZipArchive;
+            $zip = new \ZipArchive;
             $zip->open(BASE_DIR.'/tmp/latest.zip');
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
             // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/themes', BASE_DIR.'/themes');
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/vendor', BASE_DIR.'/vendor');
+            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems', BASE_DIR.'/systems');
+            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/plugins', BASE_DIR.'/plugins');
+            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/themes', BASE_DIR.'/themes');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/manifest.json', BASE_DIR.'/manifest.json');
 
+            // Run upgrade script
+            $version = $settings['version'];
+            $new_version = include(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems/upgrade.php');
+
             // Close archive and delete all unnecessary files
             $zip->close();
             unlink(BASE_DIR.'/tmp/latest.zip');
-            deleteDir(BASE_DIR.'/tmp/update');
+            rrmdir(BASE_DIR.'/tmp/update');
 
-            $this->settings('settings', 'version', $new_date_format);
-            $this->settings('settings', 'update_version', $new_date_format);
-            $this->settings('settings', 'update_changelog', $obj['commit']['message']);
+            $this->settings('settings', 'version', $new_version);
+            $this->settings('settings', 'update_version', 0);
+            $this->settings('settings', 'update_changelog', '');
+            $this->settings('settings', 'update_check', time());
 
             sleep(2);
             redirect(url([ADMIN, 'settings', 'updates']));
         } elseif (isset($_GET['reset'])) {
             $this->settings('settings', 'update_version', 0);
             $this->settings('settings', 'update_changelog', '');
+            $this->settings('settings', 'update_check', 0);
         } elseif (isset($_GET['manual'])) {
-            $package = glob(BASE_DIR.'/khanza-lite-*.zip');
+            $package = glob(BASE_DIR.'/mlite-*.zip');
             $version = false;
             if (!empty($package)) {
                 $package_path = array_shift($package);
-                preg_match('/khanza-lite\-([0-9\.a-z]+)\.zip$/', $package_path, $matches);
+                preg_match('/mlite\-([0-9\.a-z]+)\.zip$/', $package_path, $matches);
                 $version = $matches[1];
             }
             $manual_mode = ['version' => $version];
         }
 
         $this->settings->reload();
-        $settings['version'] = $this->settings->get('settings.version');
-        $settings['update_changelog'] = $this->settings->get('settings.update_changelog');
-        $settings['update_version'] = $this->settings->get('settings.update_version');
+        $settings = $this->settings('settings');
         $this->tpl->set('settings', $settings);
         $this->tpl->set('manual_mode', isset_or($manual_mode, false));
         return $this->draw('update.html');
@@ -399,7 +404,7 @@ class Admin extends AdminModule
                 $attr = null;
             }
 
-            $result[md5($file)] = ['name' => basename($file), 'path' => $file, 'short' => str_replace(BASE_DIR, null, $file), 'attr' => $attr];
+            $result[md5($file)] = ['name' => basename($file), 'path' => $file, 'short' => str_replace(BASE_DIR, '', $file), 'attr' => $attr];
         }
 
         return $result;
@@ -500,9 +505,9 @@ class Admin extends AdminModule
             $offset_prefix = $offset < 0 ? '-' : '+';
             $offset_formatted = gmdate('H:i', abs($offset));
 
-            $pretty_offset = "UTC${offset_prefix}${offset_formatted}";
+            $pretty_offset = "UTC{$offset_prefix}{$offset_formatted}";
 
-            $timezone_list[$timezone] = "(${pretty_offset}) $timezone";
+            $timezone_list[$timezone] = "({$pretty_offset}) $timezone";
         }
 
         return $timezone_list;
@@ -551,7 +556,7 @@ class Admin extends AdminModule
     public function anyCekDaftar()
     {
       if(isset($_POST['request_code'])) {
-        $url = "https://basoro.org/datars/aktif";
+        $url = "https://mlite.id/datars/aktif";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"email=".$_POST['email']);
@@ -559,15 +564,23 @@ class Admin extends AdminModule
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'Ok') {
-          $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
-        } else {
+        if($response['status'] == 'error') {
           $this->notify('failure', 'Request kode validasi pendaftaran aplikasi tidak bisa dilakukan. Silahkan simpan dulu pengaturan aplikasi anda. Atau pastikan email request sama dengan email di pengaturan aplikasi.');
+        } else {
+          $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
         }
       }
       return $this->draw('cek.daftar.html');
     }
+
+    private function _addHeaderFiles()
+    {
+      $this->core->addCSS(url('assets/css/bootstrap-colorpicker.css'));
+      $this->core->addJS(url('assets/jscripts/bootstrap-colorpicker.js'), 'footer');
+    }
+
 }

@@ -12,6 +12,7 @@
           <th style="white-space: nowrap;">No. Asuransi</th>
           <th style="white-space: nowrap;">Tgl. Masuk</th>
           <th style="white-space: nowrap;">Tgl. Keluar</th>
+          <th style="white-space: nowrap;">Status Bayar</th>
           <th style="white-space: nowrap;">Status</th>
         </tr>
       </thead>
@@ -29,6 +30,7 @@
               <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynik', $value.no_ktp, date('Y-m-d')])?}"
                   data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor KTP</a></li>
               {/if}
+<<<<<<< HEAD
               <li><a href="{?=url([ADMIN, 'pasien', 'resumeperawatan', $value.no_rkm_medis])?}" data-toggle="modal"
                   data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal"
@@ -91,6 +93,15 @@
               <li><a href="#form_jadwaloperasi" data-no_rawat="{$value.no_rawat}"
                   data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}"
                   data-kd_kamar="{$value.kd_kamar}">Input Jadwal Operasi</a></li>
+=======
+              <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
+              {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
+              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAP & Pemeriksaan</a></li>
+              <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
+              <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
+              <li><a href="#set_dpjp" data-no_rawat="{$value.no_rawat}">Set DPJP</a></li>
+              <li><a href="#ubah_penjab" data-no_rawat="{$value.no_rawat}">Ubah Penjamin</a></li>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               {/if}
             </ul>
           </td>
@@ -113,6 +124,7 @@
           <td style="white-space: nowrap;">
           {if: $value.kd_pj == 'BPJ'}
             {if: $cek_vclaim}
+              <div class="btn-group" role="group">
               <button type="button" name="button" class="btn btn-xs btn-primary sep"
                 data-no_rkm_medis="{$value.no_rkm_medis}"
                 data-nm_pasien="{$value.nm_pasien}"
@@ -122,6 +134,10 @@
                 disabled
                 {/if}
               ><span class="fa fa-send"></span> BPJS</button>
+              {if: $value.no_sep !=''}
+              <a href="{?=url([ADMIN, 'rawat_jalan', 'sepdetail', $value.no_sep])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#sepModal"><span class="fa fa-eye"></span></a>
+              {/if}
+              </div>
             {/if}
           {else}
             {$value.png_jawab}
@@ -130,6 +146,7 @@
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.no_peserta}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.tgl_masuk} {$value.jam_masuk}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.tgl_keluar} {$value.jam_keluar}</td>
+          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_billing}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.stts_pulang}</td>
         </tr>
         {/loop}
@@ -157,6 +174,13 @@
       ...
     </div>
   </div>
+</div>
+<div class="modal fade" id="sepModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
 </div>
 <script type="text/javascript">
   // ketika tombol hapus ditekan
@@ -246,11 +270,13 @@
     var no_rawat = $(this).attr("data-no_rawat");
     var no_rkm_medis = $(this).attr("data-no_rkm_medis");
     var nm_pasien = $(this).attr("data-nm_pasien");
+    var umur = $(this).attr("data-umur");
     var tgl_registrasi = $(this).attr("data-tgl_registrasi");
 
     $('input:text[name=no_rawat]').val(no_rawat);
     $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
     $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=umur]').val(umur);
     $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
     $("#display").hide();
 
@@ -571,6 +597,57 @@
   });
   var t = $(".dataTables").DataTable().rows().count();
   $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+</script>
+<script type="text/javascript">
+  // ketika tombol hapus ditekan
+  //$("#display").on("click",".set_dpjp", function(event){
+  $('a[href="#ubah_penjab"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/rawat_inap/ubahpenjab?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+
+    var ubah_penjab = ''
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih Penjamin</label>'
+        + '<select name="kd_pj" id="kd_pj" class="form-control" data-use-dimmer="false">'
+        + '{loop: $rawat_inap.penjab}'
+        + '<option value="{$value.kd_pj}">{$value.png_jawab}</option>'
+        + '{/loop}'
+        + '</select>'
+        + '</div>'
+        + '';
+
+    // tampilkan dialog konfirmasi
+    bootbox.dialog({
+      message: ubah_penjab,
+      title: 'Ubah Penjamin',
+      buttons: {
+        main: {
+          label: 'Simpan',
+          className: 'btn-primary',
+          callback() {
+            var kd_pj = $('#kd_pj').val();
+            //console.log(tgl_keluar);
+            $.post(url, {
+              no_rawat: no_rawat,
+              kd_pj: kd_pj
+            } ,function(data) {
+              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+              $("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+              "Ubah penjamin telah disimpan!"+
+              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+              "</div>").show();
+            });
+          }
+        }
+      }
+    });
+    $('select').selectator();
+    event.stopPropagation();
+    return false;
+  });
 </script>
 <script type="text/javascript">
    $(function () {

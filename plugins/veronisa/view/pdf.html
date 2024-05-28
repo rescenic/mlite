@@ -68,7 +68,11 @@ Ralan :
               </td>
               <td width="580">
                 <center>
+<<<<<<< HEAD
                   <img src="{?=url()?}/systems/lib/Barcode.php?codetype=code39&size=60&text={$print_sep.bridging_sep.no_sep}" alt="" width="200px">
+=======
+                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={$print_sep.bridging_sep.no_sep}" alt="" width="200px">
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                 </center>
               </td>
             </tr>
@@ -923,25 +927,42 @@ Ralan :
           <div class="qrcodeDPJP" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
           {$reg_periksa.nm_dokter}
           <script>
+<<<<<<< HEAD
             jQuery('.qrcodeDPJP').qrcode({
               text : "DPJP: {$reg_periksa.nm_dokter}"
             });
+=======
+          	jQuery('.qrcodeDPJP').qrcode({
+          		text	: "DPJP: {$reg_periksa.nm_dokter}"
+          	});
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           </script>
         {else}
           {loop: $dpjp_ranap}
           <div class="qrcodeDPJP{$value.nomor}" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
           {$value.nm_dokter}<br>
           <script>
+<<<<<<< HEAD
             jQuery('.qrcodeDPJP{$value.nomor}').qrcode({
               text : "DPJP: {$value.nm_dokter}"
             });
           </script>
           {/loop}
         {/if}
+=======
+          	jQuery('.qrcodeDPJP{$value.nomor}').qrcode({
+          		text	: "DPJP: {$value.nm_dokter}"
+          	});
+          </script>
+          {/loop}
+        {/if}
+
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       </p>
     </div>
   </fieldset>
   <br><br><br>
+<<<<<<< HEAD
   {if: $reg_periksa.status_lanjut == 'Ralan'}
   <fieldset style="page-break-before:always;">
     <h3>
@@ -1504,6 +1525,266 @@ Ralan :
       </tr>
     </table>
   </fieldset> -->
+=======
+  <fieldset style="page-break-before:always;">
+    <h2><center>Riwayat Obat</center></h2>
+    <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+      {*Pemberian Obat*}
+      {if: $riwayat_obat}
+      <tr class="isi">
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align='center'>
+              <td valign='top' width='10%' bgcolor='#FFFAF8'>Tanggal</td>
+              <td valign='top' width='10%' bgcolor='#FFFAF8'>Kode</td>
+              <td valign='top' width='45%' bgcolor='#FFFAF8'>Nama Obat</td>
+              <td valign='top' width='20%' bgcolor='#FFFAF8'>Jumlah</td>
+              <td valign='top' width='20%' bgcolor='#FFFAF8'>Aturan Pakai</td>
+            </tr>
+            {loop: $riwayat_obat as $value}
+            <tr>
+              <td valign='top'>{$value.tgl_perawatan} {$value.jam}</td>
+              <td valign='top'>{$value.kode_brng}</td>
+              <td valign='top'>{$value.nama_brng}</td>
+              <td valign='top'>{$value.jml} {$value.kode_sat}</td>
+              <td valign='top'>
+                {$value.resep_obat_ku.aturan}
+              </td>
+            </tr>
+            {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
+    </table>
+  </fieldset>
+  <br><br><br>
+  <fieldset style="page-break-before:always;">
+    <h2><center>Billing</center></h2>
+    <table  rules='rows' width="100%" style="font-size: 11px;font-family: verdana, sans-serif;">
+			<tr>
+			<td colspan="3">
+				<strong style="font-size: 15pt;" >{$billing_mlite_settings.nama_instansi}</strong>
+			</td>
+			</tr>
+			<tr>
+			<td width="80px">
+				<img width="70px" src='{?=url()?}/{$billing_mlite_settings.logo}' />
+			</td>
+			<td>
+				<p style="font-size: 10px;">
+				{$billing_mlite_settings.alamat}<br>
+				 Telp : {$billing_mlite_settings.nomor_telepon}<br>
+         E-Mail : {$billing_mlite_settings.email}<br>
+				Website : {$billing_mlite_settings.website}</p></td>
+			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
+				<p align="right" style="font-size: 10px;">
+				Kode Faktur : {$billing_mlite.kd_billing}<br>
+				Nama Pasien : {$billing_mlite_pasien.nm_pasien}<br>
+				No RM : {$billing_mlite_pasien.no_rkm_medis}<br>
+				Alamat : {$billing_mlite_pasien.alamat}<br></p>
+			</td>
+			</tr>
+		</table>
+		<table  rules='rows' width="100%" style="font-size: 11px;font-family: verdana, sans-serif;">
+		  <tr align="left" height='30px'>
+			<th width="20px">No</th>
+			<th with="400px">Item</th>
+			<th width="100px">Tarif</th>
+			<th width="30px">Jumlah</th>
+			<th width="150px">Total</th>
+		  </tr>
+			<tr border='1', height='20px'>
+				<td>I</td>
+				<td colspan="1">Biaya Pendaftaran Poliklinik</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$billing_mlite_detail.poliklinik.nm_poli}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite_detail.poliklinik.registrasi,2,',','.')?}</span></td>
+				<td>1</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite_detail.poliklinik.registrasi,2,',','.')?}</span></td>
+			</tr>
+			<tr border='1', height='20px'>
+				<td>II</td>
+				<td colspan="1">Biaya Obat & BHP</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.detail_pemberian_obat as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nama_brng}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_obat,2,',','.')?}</span></td>
+				<td>{$data.jml}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>III</td>
+				<td colspan="1">Jasa Dokter</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.rawat_jl_dr as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+				<td>{$data.jml}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_dr,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>IV</td>
+				<td colspan="1">Jasa Perawat</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.rawat_jl_pr as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+				<td>{$data.jml}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_pr,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>V</td>
+				<td colspan="1">Jasa Dokter & Perawat</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.rawat_jl_drpr as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+				<td>{$data.jml}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_drpr,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VI</td>
+				<td colspan="1">Jasa Laboratorium</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.periksa_lab as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+				<td></td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VII</td>
+				<td colspan="1">Jasa Radiologi</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.periksa_radiologi as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+				<td></td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VIII</td>
+				<td colspan="1">Jasa Operasi</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.operasi as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
+				<td>1</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>IX</td>
+				<td colspan="1">Obat dan BHP Operasi</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.obat_operasi as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_obat}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.hargasatuan,2,',','.')?}</span></td>
+				<td>{$data.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>X</td>
+				<td colspan="1">Biaya Tambahan</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_mlite_detail.tambahan_biaya}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama_biaya}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
+				<td>1</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Jumlah</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite.jumlah_total,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Potongan</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite.potongan,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Jumlah Bayar</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite.jumlah_harus_bayar,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing_mlite.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+			</tr>
+			<tr>
+				<td colspan="3"></td>
+				<td colspan=3>
+					<br><br>
+				<p align="center" ><strong>{$billing_mlite_settings.kota}, {?=date('d-m-Y')?}</strong><br>
+				 Kasir<br><br>
+				 <img src="{$billing_mlite_qrcode}">
+				 <br><br>
+				{*$billing_mlite_kasir*}<br>
+				</p>
+				</td>
+			</tr>
+		</table>
+  </fieldset>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   {if: $berkas_digital_pasien}
   <br><br><br>
   <!-- Berkas Digital -->
@@ -1542,6 +1823,7 @@ Ralan :
     <h2><center>Berkas Digital Perawatan</center></h2>
     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
         {loop: $berkas_digital}
+<<<<<<< HEAD
          <script>
             function rotateImage_{?=strtok(array_pop(explode('/', $value.lokasi_file)), '.')?}(degree) {
                 $('.digital-image_{?=strtok(array_pop(explode('/', $value.lokasi_file)), '.')?}').animate({  transform: degree }, {
@@ -1570,11 +1852,19 @@ Ralan :
             </div>
           </td>
         </tr>
+=======
+        {*if: $value.kode == $billing_mlite_veronisa.obat_kronis*}
+        <tr>
+          <td><img src="{?=url(WEBAPPS_URL)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"><br>{$value.nama}</td>
+        </tr>
+        {*/if*}
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
         {/loop}
     </table>
   </fieldset>
   {/if}
   <script>
+<<<<<<< HEAD
     jQuery('#qrcodeSEP').qrcode({
       text  : "No.SEP: {$print_sep.bridging_sep.no_sep}"
     });
@@ -1588,6 +1878,21 @@ Ralan :
     jQuery('#qrCodeKasir').qrcode({
       text  : "Kasir: KASIR RSUD H. DAMANHURI BARABAI"
     });
+=======
+  	jQuery('#qrcodeSEP').qrcode({
+  		text	: "No.SEP: {$print_sep.bridging_sep.no_sep}"
+  	});
+  </script>
+  <script>
+  	jQuery('#qrCodePasien').qrcode({
+  		text	: "Nama Pasien: {$print_sep.bridging_sep.nama_pasien}"
+  	});
+  </script>
+  <script>
+  	jQuery('#qrCodeKasir').qrcode({
+  		text	: "Kasir: KASIR RS AURA SYIFA"
+  	});
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   </script>
 </body>
 </html>

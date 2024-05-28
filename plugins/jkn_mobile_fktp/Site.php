@@ -3,7 +3,7 @@
 namespace Plugins\JKN_Mobile_FKTP;
 
 use Systems\SiteModule;
-use Systems\Lib\BpjsRequest;
+use Systems\Lib\PcareRequest;
 
 class Site extends SiteModule
 {
@@ -245,7 +245,7 @@ class Site extends SiteModule
                             'kd_dokter' => $cek_kouta['kd_dokter'],
                             'kd_poli' => $cek_kouta['kd_poli'],
                             'no_reg' => $no_reg,
-                            'kd_pj' => $this->settings->get('pendaftaran.bpjs'),
+                            'kd_pj' => $this->settings->get('jkn_mobile_fktp.kd_pj'),
                             'limit_reg' => 1,
                             'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
                             'status' => 'Belum'
@@ -257,7 +257,7 @@ class Site extends SiteModule
                                     'nomorantrean' => $no_reg,
                                     'angkaantrean' => $no_reg,
                                     'namapoli' => $cek_kouta['nm_poli'],
-                                    'sisaantrean' => strtotime($cek_kouta['jam_mulai']) * 1000,
+                                    'sisaantrean' => $cek_kouta['sisa_kouta'] - 1,
                                     'antreanpanggil' => $no_reg,
                                     'keterangan' => 'Datang 30 Menit sebelum pelayanan, Konfirmasi kehadiran dibagian pendaftaran dengan menunjukan bukti pendaftaran melalui Mobile JKN, Terima Kasih..'
                                 ),
@@ -313,6 +313,7 @@ class Site extends SiteModule
     {
         header("Content-Type: application/json");
         $slug = parseURL();
+        //print_r($slug);
         if(count($slug) == 4) {$n = 0;}
         if(count($slug) == 5) {$n = 1;}
         if(count($slug) == 6) {$n = 2;}
@@ -320,23 +321,44 @@ class Site extends SiteModule
         $header = apache_request_headers();
         $response = array();
         if ($slug[(1+$n)] == 'status' && $header[$this->settings->get('jkn_mobile_fktp.header')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_fktp.header_username')] == $this->settings->get('jkn_mobile_fktp.username')) {
-            $data = $this->db('reg_periksa')
-              ->select('poliklinik.nm_poli')
-              ->select(['total_antrean' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
-              ->select(['sisa_antrean' => 'SUM(CASE WHEN reg_periksa.stts=\'Belum\' THEN 1 ELSE 0 END)'])
-              ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
-              ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_rs = reg_periksa.kd_poli')
-              ->where('reg_periksa.tgl_registrasi', $slug[(3+$n)])
-              ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(2+$n)])
-              ->oneArray();
-            $get_no_reg = $this->db('reg_periksa')
-              ->select('reg_periksa.no_reg')
-              ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_pcare = reg_periksa.kd_poli')
-              ->where('reg_periksa.tgl_registrasi', $slug[(3+$n)])
-              ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(2+$n)])
-              ->where('reg_periksa.stts', 'Berkas Diterima')
-              ->limit(1)
-              ->oneArray();
+            if($slug[(3+$n)] == date('Y-m-d')) {
+              $data = $this->db('reg_periksa')
+                ->select('poliklinik.nm_poli')
+                ->select(['total_antrean' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                ->select(['sisa_antrean' => 'SUM(CASE WHEN reg_periksa.stts=\'Belum\' THEN 1 ELSE 0 END)'])
+                ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_rs = reg_periksa.kd_poli')
+                ->where('reg_periksa.tgl_registrasi', $slug[(3+$n)])
+                ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(2+$n)])
+                ->oneArray();
+              $get_no_reg = $this->db('reg_periksa')
+                ->select('reg_periksa.no_reg')
+                ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_pcare = reg_periksa.kd_poli')
+                ->where('reg_periksa.tgl_registrasi', $slug[(3+$n)])
+                ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(2+$n)])
+                ->where('reg_periksa.stts', 'Berkas Diterima')
+                ->limit(1)
+                ->oneArray();
+            } else {
+              $data = $this->db('booking_registrasi')
+                ->select('poliklinik.nm_poli')
+                ->select(['total_antrean' => 'COUNT(DISTINCT booking_registrasi.no_reg)'])
+                ->select(['sisa_antrean' => 'SUM(CASE WHEN booking_registrasi.status=\'Belum\' THEN 1 ELSE 0 END)'])
+                ->join('poliklinik', 'poliklinik.kd_poli = booking_registrasi.kd_poli')
+                ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_rs = booking_registrasi.kd_poli')
+                ->where('booking_registrasi.tanggal_periksa', $slug[(3+$n)])
+                ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(2+$n)])
+                ->oneArray();
+              $get_no_reg = $this->db('booking_registrasi')
+                ->select('booking_registrasi.no_reg')
+                ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_rs = booking_registrasi.kd_poli')
+                ->where('booking_registrasi.tanggal_periksa', $slug[(3+$n)])
+                ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(2+$n)])
+                ->where('booking_registrasi.status', 'Belum')
+                ->limit(1)
+                ->oneArray();
+            }
+
             $data['antrean_panggil'] = '000';
             if(!empty($get_no_reg['no_reg'])) {
                $data['antrean_panggil'] = $get_no_reg['no_reg'];
@@ -383,18 +405,89 @@ class Site extends SiteModule
 
     private function _resultSisaAntrean()
     {
-        header("Content-Type: application/json");
-        $header = apache_request_headers();
-        $konten = trim(file_get_contents("php://input"));
-        $decode = json_decode($konten, true);
-        $response = array();
-        $response = array(
-            'metadata' => array(
-                'message' => 'Cooming Soon',
-                'code' => 505
-            )
-        );
-        echo json_encode($response);
+      header("Content-Type: application/json");
+      $slug = parseURL();
+      //print_r($slug);
+      if(count($slug) == 5) {$n = 0;}
+      if(count($slug) == 6) {$n = 1;}
+      if(count($slug) == 7) {$n = 2;}
+      $header = apache_request_headers();
+      $response = array();
+      if ($slug[(1+$n)] == 'sisapeserta' && $header[$this->settings->get('jkn_mobile_fktp.header')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_fktp.header_username')] == $this->settings->get('jkn_mobile_fktp.username')) {
+        if($slug[(4+$n)] == date('Y-m-d')) {
+          $data = $this->db('reg_periksa')
+            ->select('poliklinik.nm_poli')
+            ->select(['total_antrean' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+            ->select(['sisa_antrean' => 'SUM(CASE WHEN reg_periksa.stts=\'Belum\' THEN 1 ELSE 0 END)'])
+            ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+            ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_rs = reg_periksa.kd_poli')
+            ->where('reg_periksa.tgl_registrasi', $slug[(3+$n)])
+            ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(3+$n)])
+            ->oneArray();
+          $get_no_reg = $this->db('reg_periksa')
+            ->select('reg_periksa.no_reg')
+            ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_pcare = reg_periksa.kd_poli')
+            ->where('reg_periksa.tgl_registrasi', $slug[(4+$n)])
+            ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(3+$n)])
+            ->where('reg_periksa.stts', 'Berkas Diterima')
+            ->limit(1)
+            ->oneArray();
+        } else {
+          $data = $this->db('booking_registrasi')
+            ->select('poliklinik.nm_poli')
+            ->select(['total_antrean' => 'COUNT(DISTINCT booking_registrasi.no_reg)'])
+            ->select(['sisa_antrean' => 'SUM(CASE WHEN booking_registrasi.status=\'Belum\' THEN 1 ELSE 0 END)'])
+            ->join('poliklinik', 'poliklinik.kd_poli = booking_registrasi.kd_poli')
+            ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_rs = booking_registrasi.kd_poli')
+            ->where('booking_registrasi.tanggal_periksa', $slug[(4+$n)])
+            ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(3+$n)])
+            ->oneArray();
+          $get_no_reg = $this->db('booking_registrasi')
+            ->select('booking_registrasi.no_reg')
+            ->join('maping_poliklinik_pcare', 'maping_poliklinik_pcare.kd_poli_rs = booking_registrasi.kd_poli')
+            ->where('booking_registrasi.tanggal_periksa', $slug[(4+$n)])
+            ->where('maping_poliklinik_pcare.kd_poli_pcare', $slug[(3+$n)])
+            ->where('booking_registrasi.status', 'Belum')
+            ->limit(1)
+            ->oneArray();
+        }
+
+          $data['antrean_panggil'] = '000';
+          if(!empty($get_no_reg['no_reg'])) {
+             $data['antrean_panggil'] = $get_no_reg['no_reg'];
+          }
+
+          if ($data['nm_poli'] != '') {
+              $response = array(
+                  'response' => array(
+                      'nomorantrean' => $data['total_antrean'],
+                      'namapoli' => $data['nm_poli'],
+                      'sisaantrean' => $data['sisa_antrean'],
+                      'antreanpanggil' => $data['antrean_panggil'],
+                      'keterangan' => 'Datanglah Minimal 30 Menit, jika no antrian anda terlewat, silakan konfirmasi ke bagian Pendaftaran atau Perawat Poli, Terima Kasih.'
+                  ),
+                  'metadata' => array(
+                      'message' => 'Ok',
+                      'code' => 200
+                  )
+              );
+          } else {
+              $response = array(
+                  'metadata' => array(
+                      'message' => 'Maaf belum Ada Antrian ditanggal ' . $slug[(3+$n)],
+                      'code' => 201
+                  )
+              );
+          }
+      } else {
+          $response = array(
+              'metadata' => array(
+                  'message' => 'Access denied',
+                  'code' => 401
+              )
+          );
+      }
+      echo json_encode($response);
 
     }
 

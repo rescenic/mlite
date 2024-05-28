@@ -33,9 +33,15 @@
                 <div class="row clearfix">
                   <div class="col col-md-6">
                     <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}
+<<<<<<< HEAD
                       <a href="{?=url()?}/admin/vedika/pengajuanexcel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
                       <a href="{?=url()?}/admin/vedika/pengajuanexcel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
                       <a href="{?=url()?}/admin/vedika/pengajuanexcel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+=======
+                      <a href="{?=url()?}/{?=ADMIN?}/vedika/pengajuanexcel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
+                      <a href="{?=url()?}/{?=ADMIN?}/vedika/pengajuanexcel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
+                      <a href="{?=url()?}/{?=ADMIN?}/vedika/pengajuanexcel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                     </h3>
                   </div>
                   <div class="col col-md-6">
@@ -97,7 +103,11 @@
                               {loop: $value.pegawai as $data}
                                 <i class="fa fa-user"></i> {$data.nama}
                               {/loop}
+<<<<<<< HEAD
                             </div>                          
+=======
+                            </div>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                           {/if}
                         </td>
       									<td>
@@ -131,10 +141,23 @@
                               <td width='120px'>{if: $tab == 'ralan'}Poliklinik{else}Bangsal/kamar{/if}</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
+<<<<<<< HEAD
                               {if: $tab == 'ralan'}
                               <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
                               {else}
                               <td width='120px'>Dokter</td><td>: {loop: $value.nm_dokter as $data}- {$data.nm_dokter}<br>{/loop}</td>
+=======
+                              {if: $value.status_lanjut == 'Ralan'}
+                              <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
+                              {/if}
+                              {if: $value.status_lanjut == 'Ranap'}
+                              <td width='120px'>Dokter</td>
+                              <td>:
+                                {loop: $value.nm_dokter as $data}
+                                  - {$data.nm_dokter}<br>
+                                {/loop}
+                              </td>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
                               {/if}
                             </tr>
                             <tr>
@@ -160,14 +183,6 @@
                         </td>
                         <td>
                           <table>
-                            <tr><td><form action="{?=url(ADMIN.'/pasien_galleries/add')?}" method="POST" target="_blank"><input type="hidden" name="name" value="{$value.no_rkm_medis}"><input type="submit" class="btn btn-info btn-xs" value="Unggah Berkas Pasien" /></form></td></tr>
-                            {if: !empty($value.berkas_digital_pasien)}
-                            {loop: $value.berkas_digital_pasien as $data}
-                            <tr>
-                              <td>- <a href="{?=url($data.src.lg)?}" class="gallery">{if: $data.title=='bpjs'}Kartu BPJS{elseif: $data.title=='inhealth'}Kartu Inhealth{elseif: $data.title=='ktp'}KTP{else}Kartu Keluarga{/if}</a></td>
-                            </tr>
-                            {/loop}
-                            {/if}
                             <tr><td><br><a href="{$value.berkasPerawatan}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>

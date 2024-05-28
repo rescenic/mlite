@@ -4,6 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
+
 class JnsPerawatanInap
 {
 
@@ -41,7 +42,7 @@ class JnsPerawatanInap
     {
         $return['bangsal'] = $this->db('bangsal')->where('status', '1')->toArray();
         $return['kategori_perawatan'] = $this->db('kategori_perawatan')->toArray();
-        $return['penjab'] = $this->db('penjab')->toArray();
+        $return['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         $return['kelas'] = ['Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP'];
         if (isset($_POST['kd_jenis_prw'])){
           $return['form'] = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
@@ -136,6 +137,18 @@ class JnsPerawatanInap
     public function postHapus()
     {
       return $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->delete();
+    }
+
+    public function postMaxId()
+    {
+      $max_id = $this->db('jns_perawatan_inap')->select(['kd_jenis_prw' => 'ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0)'])->oneArray();
+      if(empty($max_id['kd_jenis_prw'])) {
+        $max_id['kd_jenis_prw'] = '000';
+      }
+      $_next_max_id = sprintf('%03s', ($max_id['kd_jenis_prw'] + 1));
+      $next_max_id = 'RI'.$_next_max_id;
+      echo $next_max_id;
+      exit();
     }
 
 }

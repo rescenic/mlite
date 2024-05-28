@@ -11,7 +11,6 @@ class Admin extends AdminModule
   {
     return [
       'Main' => 'main',
-      //'Menu' => 'menu'
     ];
   }
 
@@ -36,15 +35,22 @@ class Admin extends AdminModule
     $jam_jaga = [];
     $cek_rekap = [];
     $nama_pegawai = '';
+<<<<<<< HEAD
     $iht = [];
     $teks = array("Jangan Lupa Bahagia", "Cara untuk memulai adalah berhenti berbicara dan mulai melakukan", "Waktu yang hilang tidak akan pernah ditemukan lagi", "Kamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu", "Ini bukan tentang ide. Ini tentang mewujudkan ide", "Bekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang");
     $random_keys = array_rand($teks);
     $teks = $teks[$random_keys];
+=======
+    $pengaturan_presensi = '';
+    $teks = array('');
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     if ($presensi) {
-      $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
       if ($this->core->getUserInfo('username', null, true) == 'admin') {
         $nama_pegawai = 'Administrator';
+      } else {
+        $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
       }
+<<<<<<< HEAD
       $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
       $birthday = $this->db('pegawai')->like('tgl_lahir','%'.date('m-d'))->where('stts_aktif','AKTIF')->toArray();
       $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
@@ -53,7 +59,19 @@ class Admin extends AdminModule
       $iht['check'] = $this->db('presensi_iht')->where('id_user',$idpeg['id'])->oneArray();
       $iht['quiz'] = $this->db('quiz_iht')->where('id_user',$idpeg['id'])->oneArray();
       $iht['id'] = $idpeg['id'];
+=======
+      $idpeg = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+      if($idpeg) {
+        $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+        $cek_rekap = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
+        $jam_jaga = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
+      }
+      $teks = explode(';', $this->settings->get('presensi.helloworld'));
+      $pengaturan_presensi = $this->settings('presensi');
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
     }
+    $random_keys = array_rand($teks);
+    $teks = $teks[$random_keys];
     return $this->draw('main.html', [
       'settings' => $settings,
       'cek_presensi' => $cek_presensi,
@@ -62,8 +80,12 @@ class Admin extends AdminModule
       'presensi' => $presensi,
       'nama' => $nama_pegawai,
       'teks' => $teks,
+<<<<<<< HEAD
       'iht' => $iht,
       'lahir' => $birthday,
+=======
+      'pengaturan_presensi' => $pengaturan_presensi,
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       'notif_presensi' => $this->settings('settings', 'notif_presensi')
     ]);
   }
@@ -72,7 +94,8 @@ class Admin extends AdminModule
   {
     $this->core->addCSS(url(MODULES . '/dashboard/css/admin/dashboard.css?v={$mlite.version}'));
     $this->core->addJS(url(MODULES . '/dashboard/js/admin/dashboard.js?v={$mlite.version}'), 'footer');
-    return $this->draw('dashboard.html', ['modules' => $this->_modulesList()]);
+    echo $this->draw('dashboard.html', ['modules' => $this->_modulesList()]);
+    exit();
   }
 
   private function _modulesList()
@@ -133,7 +156,7 @@ class Admin extends AdminModule
       }
 
       if (isset($img) && $img->getInfos('width')) {
-        date_default_timezone_set('Asia/Makassar');
+        date_default_timezone_set($this->settings->get('settings.timezone'));
         $img->save(WEBAPPS_PATH . "/presensi/" . $gambar);
 
         $urlnya         = WEBAPPS_URL . '/presensi/' . $gambar;
@@ -197,7 +220,11 @@ class Admin extends AdminModule
                     $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_jaga['jam_masuk']);
                     $akhir = new \DateTime();
                     $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
-                    $keterlambatan = $diff->format('%H:%I:%S');
+                    if ($awal > $akhir) {
+                     $keterlambatan = $diff->format('');
+                     }else{
+                     $keterlambatan = $diff->format('%H:%I:%S');
+                   }
                   }
 
                   $insert = $this->db('temporary_presensi')
@@ -241,7 +268,11 @@ class Admin extends AdminModule
                   $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_jaga['jam_masuk']);
                   $akhir = new \DateTime();
                   $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
-                  $keterlambatan = $diff->format('%H:%I:%S');
+                  if ($awal > $akhir) {
+                     $keterlambatan = $diff->format('');
+                     }else{
+                     $keterlambatan = $diff->format('%H:%I:%S');
+                   }
                 }
 
                 $insert = $this->db('temporary_presensi')
@@ -419,4 +450,5 @@ class Admin extends AdminModule
     echo $this->tpl->draw(MODULES . '/modules/view/admin/help.html', true);
     exit();
   }
+
 }

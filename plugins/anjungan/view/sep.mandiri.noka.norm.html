@@ -168,6 +168,7 @@
               {if: is_array($sep_response)}
               <ul class="list-unstyled">
               {loop: $sep_response.rujukan as $key => $val }
+<<<<<<< HEAD
                 {if: $no_rkm_medis != ''}
                   {if: $status != 'reg'}
                     <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}/{$status}" id="open{$val.noKunjungan}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase rujukan">{$val.poliRujukan.nama}</a></li>
@@ -177,6 +178,9 @@
                 {else}
                 <li><a href="{?=url('anjungan/baru/bikin')?}/{$val.noKunjungan}" id="open{$val.noKunjungan}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase rujukan">{$val.poliRujukan.nama}</a></li>
                 {/if}
+=======
+                <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}/{$val.poliRujukan.kode}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase">{$val.poliRujukan.nama}</a></li>
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
               {/loop}
               </ul>
               {else}

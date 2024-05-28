@@ -1,5 +1,9 @@
 $('.dataTables').DataTable({
+<<<<<<< HEAD
   "order": [[ 0, "desc" ]],
+=======
+  "order": [[ 1, "desc" ]],
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
   "pagingType": "full",
   "language": {
     "paginate": {
@@ -33,6 +37,7 @@ $(function () {
       locale: 'id'
     });
 });
+<<<<<<< HEAD
  
 $(document).ready(function(){
 
@@ -92,3 +97,5 @@ $(document).ready(function(){
 
   
 
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d

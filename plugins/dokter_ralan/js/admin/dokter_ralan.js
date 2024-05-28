@@ -40,7 +40,7 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
     $("#form_soap").hide();
     $("#form_sep").hide();
     $("#notif").hide();
-    $("#rincian").hide();
+    $("#rincian").show();
     $("#sep").hide();
     $("#soap").hide();
     $('.periode_rawat_jalan').datetimepicker('remove');
@@ -143,7 +143,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
 
 // ketika tombol simpan diklik
 $("#form_soap").on("click", "#simpan_soap", function(event){
-  {if: !$this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']))}
+  {if: !$cek_role}
     bootbox.alert({
         title: "Pemberitahuan penggunaan!",
         message: "Silahkan login dengan akun non administrator (akun yang berelasi dengan modul kepegawaian)!"
@@ -165,12 +165,14 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     var kesadaran       = $('input:text[name=kesadaran]').val();
     var alergi          = $('input:text[name=alergi]').val();
     var alergi          = $('input:text[name=alergi]').val();
-    var imun_ke         = $('input:text[name=imun_ke]').val();
+    var lingkar_perut   = $('input:text[name=lingkar_perut]').val();
     var keluhan         = $('textarea[name=keluhan]').val();
     var pemeriksaan     = $('textarea[name=pemeriksaan]').val();
     var penilaian       = $('textarea[name=penilaian]').val();
     var rtl             = $('textarea[name=rtl]').val();
     var instruksi       = $('textarea[name=instruksi]').val();
+    var evaluasi        = $('textarea[name=evaluasi]').val();
+    var spo2            = $('input:text[name=spo2]').val();
 
     var url = baseURL + '/dokter_ralan/savesoap?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
@@ -185,12 +187,14 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     gcs : gcs,
     kesadaran : kesadaran,
     alergi : alergi,
-    imun_ke: imun_ke,
+    lingkar_perut: lingkar_perut,
     keluhan : keluhan,
     pemeriksaan : pemeriksaan,
     penilaian : penilaian,
     rtl : rtl,
-    instruksi : instruksi
+    instruksi : instruksi,
+    evaluasi : evaluasi,
+    spo2 : spo2
     }, function(data) {
       // tampilkan data
       $("#display").hide();
@@ -209,15 +213,21 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       $('input:text[name=gcs]').val("");
       $('input:text[name=kesadaran]').val("");
       $('input:text[name=alergi]').val("");
-      $('input:text[name=imun_ke]').val("");
+      $('input:text[name=lingkar_perut]').val("");
       $('textarea[name=keluhan]').val("");
       $('textarea[name=pemeriksaan]').val("");
       $('textarea[name=penilaian]').val("");
       $('textarea[name=rtl]').val("");
       $('textarea[name=instruksi]').val("");
+      $('textarea[name=evaluasi]').val("");
+      $('input:text[name=spo2]').val("");
       $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
       $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
-      $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
+      //$('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
+      $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
+      } ,function(data) {
+        $("#form_soap #jam_rawat").val(data);
+      });
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data soap telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -242,12 +252,14 @@ $("#soap").on("click",".edit_soap", function(event){
   var gcs             = $(this).attr("data-gcs");
   var kesadaran       = $(this).attr("data-kesadaran");
   var alergi          = $(this).attr("data-alergi");
-  var imun_ke         = $(this).attr("data-imun_ke");
+  var lingkar_perut   = $(this).attr("data-lingkar_perut");
   var keluhan         = $(this).attr("data-keluhan");
   var pemeriksaan     = $(this).attr("data-pemeriksaan");
   var penilaian       = $(this).attr("data-penilaian");
   var rtl             = $(this).attr("data-rtl");
   var instruksi       = $(this).attr("data-instruksi");
+  var evaluasi        = $(this).attr("data-evaluasi");
+  var spo2            = $(this).attr("data-spo2");
 
   $('input:text[name=tgl_perawatan]').val(tgl_perawatan);
   $('input:text[name=jam_rawat]').val(jam_rawat);
@@ -260,12 +272,14 @@ $("#soap").on("click",".edit_soap", function(event){
   $('input:text[name=gcs]').val(gcs);
   $('input:text[name=kesadaran]').val(kesadaran);
   $('input:text[name=alergi]').val(alergi);
-  $('input:text[name=imun_ke]').val(imun_ke);
+  $('input:text[name=lingkar_perut]').val(lingkar_perut);
   $('textarea[name=keluhan]').val(keluhan);
   $('textarea[name=pemeriksaan]').val(pemeriksaan);
   $('textarea[name=penilaian]').val(penilaian);
   $('textarea[name=rtl]').val(rtl);
   $('textarea[name=instruksi]').val(instruksi);
+  $('textarea[name=evaluasi]').val(evaluasi);
+  $('input:text[name=spo2]').val(spo2);
 
 });
 
@@ -303,12 +317,14 @@ $("#soap").on("click",".hapus_soap", function(event){
         $('input:text[name=gcs]').val("");
         $('input:text[name=kesadaran]').val("");
         $('input:text[name=alergi]').val("");
-        $('input:text[name=imun_ke]').val("");
+        $('input:text[name=lingkar_perut]').val("");
         $('textarea[name=keluhan]').val("");
         $('textarea[name=pemeriksaan]').val("");
         $('textarea[name=penilaian]').val("");
         $('textarea[name=rtl]').val("");
         $('textarea[name=instruksi]').val("");
+        $('textarea[name=evaluasi]').val("");
+        $('input:text[name=spo2]').val("");
         $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
         $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
         $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
@@ -383,6 +399,7 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
   $("#kontrol").hide();
+  $("#surat_kontrol").hide();
 });
 
 // tombol batal diklik
@@ -399,6 +416,7 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
   $("#kontrol").hide();
+  $("#surat_kontrol").hide();
 });
 
 // tombol batal diklik
@@ -415,6 +433,7 @@ $("#form_kontrol").on("click", "#selesai_kontrol", function(event){
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
   $("#kontrol").hide();
+  $("#surat_kontrol").hide();
 });
 
 // ketika inputbox pencarian diisi
@@ -724,7 +743,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var kode_provider   = $('input:text[name=kode_provider]').val();
   var kode_provider2   = $('input:text[name=kode_provider2]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-  var jam_rawat       = $('input:text[name=jam_rawat]').val();
+  var jam_rawat       = $('input:text[name=jam_reg]').val();
   var biaya           = $('input:text[name=biaya]').val();
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
@@ -755,6 +774,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   informasi_tambahan : informasi_tambahan,
   diagnosa_klinis      : diagnosa_klinis
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
@@ -765,6 +785,10 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
+    $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
+    } ,function(data) {
+      $("#form_rincian #jam_reg").val(data);
+    });
     $('input:hidden[name=kat]').val("");
     $('input:text[name=biaya]').val("");
     $('input:text[name=diagnosa_klinis]').val("");
@@ -808,6 +832,70 @@ $("#rincian").on("click",".hapus_detail", function(event){
         tgl_perawatan: tgl_perawatan,
         jam_rawat: jam_rawat,
         provider: provider
+      } ,function(data) {
+        var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_permintaan_lab", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/dokter_ralan/hapuspermintaanlab?t=' + mlite.token;
+  var noorder = $(this).attr("data-noorder");
+  var no_rawat = $(this).attr("data-no_rawat");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        noorder: noorder,
+        no_rawat: no_rawat
+      } ,function(data) {
+        var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_permintaan_rad", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/dokter_ralan/hapuspermintaanrad?t=' + mlite.token;
+  var noorder = $(this).attr("data-noorder");
+  var no_rawat = $(this).attr("data-no_rawat");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        noorder: noorder,
+        no_rawat: no_rawat
       } ,function(data) {
         var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
@@ -908,6 +996,19 @@ $("#rincian").on("click",".copy_resep", function(event){
 
 });
 
+$("#resep").on("click",".copy_resep", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/dokter_ralan/copyresep?t=' + mlite.token;
+  var no_resep  = $(this).attr("data-no_resep");
+
+  $.post(url, {no_resep: no_resep} ,function(data) {
+    // tampilkan data
+    $("#display_copy_resep").html(data).show();
+  });
+
+});
+
 // ketika tombol hapus ditekan
 $("#rincian").on("click","#simpan_copy_resep", function(event){
 //$('form').on('submit', function(event){
@@ -921,7 +1022,7 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
   var jam_rawat       = $('input:text[name=jam_reg]').val();
   var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
   var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
-  var aturan_pakai       = JSON.stringify($('input:hidden[name=aturan_copyresep]').serializeArray());
+  var aturan_pakai       = JSON.stringify($('input:text[name=aturan_copyresep]').serializeArray());
 
   $.post(url_save, {no_rawat : no_rawat,
     tgl_perawatan : tgl_perawatan,
@@ -1038,7 +1139,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1062,7 +1163,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1086,7 +1187,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=jns_perawatan&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=jns_perawatan&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1110,7 +1211,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=jns_perawatan_lab&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=jns_perawatan_lab&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1134,7 +1235,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=jns_perawatan_radiologi&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=jns_perawatan_radiologi&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1158,7 +1259,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=icd10&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=icd10&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1182,7 +1283,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=icd9&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=icd9&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1200,4 +1301,55 @@ $(document).ready(function () {
     textField: 'deskripsi_panjang'
   });
   $('select').selectator();
+});
+
+$("#form_soap").on("click","#odontogram", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var id_pasien = $('input:text[name=no_rkm_medis]').val();
+  var loadURL =  baseURL + '/dokter_ralan/odontogram/' + id_pasien + '?t=' + mlite.token;
+
+  var modal = $('#odontogramModal');
+  var modalContent = $('#odontogramModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
+
+$("#form_soap").on("click","#jam_rawat", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_soap #jam_rawat").val(data);
+    });
+});
+
+$("#form_rincian").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_rincian #jam_reg").val(data);
+    });
+});
+
+$("#form_soap").on("click",".resume", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val().replace(/\//g, '');
+
+  var loadURL =  baseURL + '/dokter_ralan/resume/' + no_rawat + '?t=' + mlite.token;
+
+  var modal = $('#eresepModal');
+  var modalContent = $('#eresepModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
 });

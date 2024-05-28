@@ -11,7 +11,7 @@ class Templates
 
     private $tags = [
                 '{\*(.*?)\*}' => 'self::comment',
-                '{noparse}(.*?){\/noparse}' => 'self::noParse',
+                '{noparse}(.*?){\/noparse}' => self::class . '::noParse',
                 '{if: ([^}]*)}' => '<?php if ($1): ?>',
                 '{else}' => '<?php else: ?>',
                 '{elseif: ([^}]*)}' => '<?php elseif ($1): ?>',
@@ -24,9 +24,8 @@ class Templates
                 '{(\$[a-zA-Z\-\._\[\]\'"0-9]+)}' => '<?php echo %%$1; ?>',
                 '{(\$[a-zA-Z\-\._\[\]\'"0-9]+)\|e}' => '<?php echo htmlspecialchars(%%$1, ENT_QUOTES | ENT_HTML5, "UTF-8"); ?>',
                 '{(\$[a-zA-Z\-\._\[\]\'"0-9]+)\|cut:([0-9]+)}' => '<?php echo str_limit(strip_tags(%%$1), $2); ?>',
-                '{widget: ([\.\-a-zA-Z0-9]+)}' => '<?php echo \Systems\Lib\Widget::call(\'$1\'); ?>',
-                '{include: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", null, "$1")); ?>',
-                '{template: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", null, $mlite["theme"]."/$1")); ?>',
+                '{include: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", "", "$1")); ?>',
+                '{template: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", "", $mlite["theme"]."/$1")); ?>',
             ];
 
     public $core;
@@ -55,7 +54,7 @@ class Templates
     {
         // replace tags with PHP
         foreach ($this->tags as $regexp => $replace) {
-            if (strpos($replace, 'self') !== false) {
+            if (strpos($replace, self::class) !== false) {
                 $content = preg_replace_callback('#'.$regexp.'#s', $replace, $content);
             } else {
                 $content = preg_replace('#'.$regexp.'#', $replace, $content);
@@ -66,7 +65,13 @@ class Templates
         if (preg_match_all('/(\$(?:[a-zA-Z0-9_-]+)(?:\.(?:(?:[a-zA-Z0-9_-][^\s]+)))*)/', $content, $matches)) {
             $matches = $this->organize_array($matches);
             usort($matches, function ($a, $b) {
-                return strlen($a[0]) < strlen($b[0]);
+                //return strlen($a[0]) < strlen($b[0]);
+                $aLen = strlen($a[0]);
+                $bLen = strlen($b[0]);
+                if ($aLen === $bLen) {
+                    return 0;
+                }
+                return $aLen < $bLen ? 1 : -1;
             });
 
             foreach ($matches as $match) {
@@ -83,7 +88,13 @@ class Templates
         if (preg_match_all('/\%\%(.)([a-zA-Z0-9_-]+)/', $content, $matches)) {
             $matches = $this->organize_array($matches);
             usort($matches, function ($a, $b) {
-                return strlen($a[2]) < strlen($b[2]);
+                //return strlen($a[2]) < strlen($b[2]);
+                $aLen = strlen($a[2]);
+                $bLen = strlen($b[2]);
+                if ($aLen === $bLen) {
+                    return 0;
+                }
+                return $aLen < $bLen ? 1 : -1;
             });
 
             foreach ($matches as $match) {
@@ -129,9 +140,9 @@ class Templates
 
             ob_start();
             include($tmpFile);
-            if (!DEV_MODE) {
-                unlink($tmpFile);
-            }
+            // if (!DEV_MODE) {
+            //     unlink($tmpFile);
+            // }
             return ob_get_clean();
         }
     }

@@ -1,7 +1,7 @@
 <style>
   html {
     height: 0;
-    background: url('{?=url()?}/themes/admin/img/wallpaper.jpeg') no-repeat center center fixed;
+    background: url('{?=url()?}/{$settings.wallpaper}') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -21,16 +21,16 @@
     position: fixed;
     bottom: 120px;
     left: 80px;
-    min-width: 600px;
-    color: #fff !important;
+    width: 100%;
+    color: {$settings.text_color} !important;
   }
 
   p.title {
     position: absolute;
     bottom: 30px;
     left: 140px;
-    color: #fff !important;
     font-size: 32px;
+    text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
   }
 
   p.alamat {
@@ -38,11 +38,13 @@
     bottom: 0px;
     left: 140px;
     font-size: 16px;
+    text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
   }
 
   div.coba {
     position: relative !important;
     top: 47px;
+    margin: 0 15px;
     /* display: none; */
   }
 
@@ -52,7 +54,6 @@
       bottom: 100px;
       left: 0px;
       min-width: 600px;
-      color: #fff !important;
     }
 
     img.logo {
@@ -63,8 +64,8 @@
       position: absolute;
       bottom: 20px;
       left: 80px;
-      color: #fff !important;
       font-size: 18px;
+      text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
     }
 
     p.alamat {
@@ -72,6 +73,7 @@
       bottom: 10px;
       left: 80px;
       font-size: 10px;
+      text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
     }
 
     .halo {
@@ -89,7 +91,11 @@
       height: 144px;
       left: 0px;
       top: 130px;
+<<<<<<< HEAD
       perspective: 100px;
+=======
+      margin: 0;
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
       /* background: linear-gradient(269.6deg, #56549E 0.35%, #AEA1E6 101.48%); */
       border-radius: 0px 20px 20px 0px;
@@ -135,7 +141,6 @@
       bottom: 100px;
       left: 0px;
       min-width: 600px;
-      color: #fff !important;
     }
 
     img.logo {
@@ -146,8 +151,8 @@
       position: absolute;
       bottom: 20px;
       left: 80px;
-      color: #fff !important;
       font-size: 18px;
+      text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
     }
 
     p.alamat {
@@ -155,6 +160,7 @@
       bottom: 10px;
       left: 80px;
       font-size: 10px;
+      text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
     }
 
     .halo {
@@ -171,8 +177,13 @@
       width: 250px;
       height: 144px;
       left: 0px;
+<<<<<<< HEAD
       top: 130px;
       perspective: 100px;
+=======
+      top: 424px;
+      margin: 0;
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
       /* background: linear-gradient(269.6deg, #56549E 0.35%, #AEA1E6 101.48%); */
       border-radius: 0px 20px 20px 0px;
@@ -238,6 +249,7 @@
 {if: $presensi}
 <div class="btn-group">
   <a href="javascript:void(0)" onclick="getDistanceFromLatLonInKm()" class="btn btn-danger btn-fab">
+<<<<<<< HEAD
     <i class="fa fa-plus"></i> Presensi Online
   </a>
 </div>
@@ -295,6 +307,39 @@
 </div>
 {/if}
 {/if}
+=======
+    <i class="fa fa-camera"></i> Presensi Online
+  </a>
+</div>
+  {if: $notif_presensi == 'true'}
+    {if: $cek_presensi}
+    <div class="alert alert-success coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-thumbs-up"></i> Anda Sudah Presensi Masuk
+      <br>
+      <i>* {$teks} *</i>
+    </div>
+    {elseif: $cek_rekap}
+    <div class="alert alert-info coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-check-square"></i> Anda Sudah Presensi Pulang<br>
+      <i>* {$teks} *</i>
+    </div>
+    {else}
+    <div class="alert alert-warning coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-exclamation-triangle"></i> Anda Belum Presensi<br>
+      <i>* {$teks} *</i>
+    </div>
+    {/if}
+  {/if}
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 {/if}
 
 <!--{if: !$iht.check}
@@ -449,6 +494,7 @@
 </div>
 
 <script>
+<<<<<<< HEAD
   function getDistanceFromLatLonInKm() {
     window.navigator.geolocation.getCurrentPosition(function(pos) {
       console.log(pos);
@@ -466,6 +512,33 @@
       var dist = 2 * R * Math.asin(Math.sqrt(a));
       if(dist > 2) {
         alert('Absen wajib di dalam RS!!')
+=======
+  {if: $presensi}
+  function getDistanceFromLatLonInKm() {
+    window.navigator.geolocation.getCurrentPosition(function(pos) {
+      console.log(pos);
+      var units = 'm';
+      var latitude2 = '{$pengaturan_presensi.lat}';
+      var longitude2 = '{$pengaturan_presensi.lon}';
+      var latitude1 = pos.coords.latitude;
+      var longitude1 = pos.coords.longitude;
+      var theta = longitude1 - longitude2;
+      var p = Math.PI;
+      var degradlat1 = latitude1 * p / 180;
+      var degradlat2 = latitude2 * p / 180;
+      var degradtheta = theta * p / 180;
+      var c = Math.cos;
+      var s = Math.sin;
+      var a = (s(degradlat1) * s(degradlat2)) + (c(degradlat1) * c(degradlat2) * c(degradtheta));
+      var a = Math.acos(a);
+      var a = a * 180 / p;
+      var a = a * 60 * 1.1515;
+      var kilometers = a * 1.609344;
+      var meters = kilometers * 1000;
+
+      if(meters > {$pengaturan_presensi.distance}) {
+        alert('Presensi harus di area Rumah Sakit!!')
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       } else {
         $('#myModal').modal('show', function () {
         });
@@ -481,7 +554,11 @@
           break;
         case GeolocationPositionError.PERMISSION_DENIED:
           // User denied the request.
+<<<<<<< HEAD
         alert('Cek Lokasi Belum Di Izinkan!!')
+=======
+        alert('Aktifkan GPS dan Izin Lokasi!!')
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
           break;
         case GeolocationPositionError.POSITION_UNAVAILABLE:
           // Position not available.
@@ -491,6 +568,7 @@
     },
     {timeout: 5000 , maximumAge: 0});
   }
+<<<<<<< HEAD
 
   function postStartTime(){
     var baseURL = mlite.url + '/' + mlite.admin;
@@ -506,6 +584,9 @@
       }
     });
   }
+=======
+  {/if}
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
 
   $(document).ready(function () {
 
@@ -543,7 +624,10 @@
       var base64image = document.getElementById("imageprev").src;
 
       Webcam.upload(base64image, '{?=url(ADMIN.'/dashboard/upload/')?}&shift=' + getshift, function (code, text) {
+<<<<<<< HEAD
         console.log(code);
+=======
+>>>>>>> 2b8f21087b743017fadbcbdcc3683d00a4e5404d
       });
 
       Webcam.reset();
